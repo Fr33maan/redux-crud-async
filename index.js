@@ -1,11 +1,11 @@
 
-var primaryActionTypeGenerator    = require('./src/primaryActionTypeGenerator')
-var primaryActionGenerator        = require('./src/primaryActionGenerator')
-var primaryReducerGenerator       = require('./src/primaryReducerGenerator')
+var primaryActionTypeGenerator    = require('./lib/primaryActionTypeGenerator')
+var primaryActionGenerator        = require('./lib/primaryActionGenerator')
+var primaryReducerGenerator       = require('./lib/primaryReducerGenerator')
 
-var associatedActionGenerator     = require('./src/associationActionGenerator')
-var associatedActionTypeGenerator = require('./src/associationActionTypeGenerator')
-var associatedReducerGenerator    = require('./src/associationReducerGenerator')
+var associatedActionGenerator     = require('./lib/associationActionGenerator')
+var associatedActionTypeGenerator = require('./lib/associationActionTypeGenerator')
+var associatedReducerGenerator    = require('./lib/associationReducerGenerator')
 
 
 var initModule = function(hostConfig) {
