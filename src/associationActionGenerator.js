@@ -1,14 +1,16 @@
 // import axios from 'axios'
-var hostConfig     = require('../../config/host')
-var uuid           = require('uuid')
-var axios          = require('axios')
-var capitalize     = require('../utils/capitalize')
-var pluralize      = require('../utils/pluralize')
-var checkModelName = require('../utils/checkModelName')
+var uuid            = require('uuid')
+var axios           = require('axios')
+var capitalize      = require('../utils/capitalize')
+var pluralize       = require('../utils/pluralize')
+var checkModelName  = require('../utils/checkModelName')
+var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var now = Date.now
 
 
-module.exports= function(primaryModel, associatedModel) {
+module.exports= function(primaryModel, associatedModel, hostConfig) {
+
+  if(!hostConfig || !hostConfig.host) throw new Error('You must instantiate redux-crud-async.associationActionFor with a host => {host: "http://exemple.com"}')
 
   checkModelName(primaryModel)
   checkModelName(associatedModel)
@@ -57,7 +59,7 @@ module.exports= function(primaryModel, associatedModel) {
       function success(models) {
         return {
           type                                             : A.FIND_PRIMARY_ASSOCIATED_MODELS_SUCCESS,
-          [primaryModelName + pluralAssociatedModelNameCap]: models,
+          [primaryModelName + pluralAssociatedModelNameCap]: modelsWithTmpId(models),
           receivedAt                                       : now()
         }
       }

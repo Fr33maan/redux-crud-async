@@ -1,12 +1,14 @@
-var uuid           = require('uuid')
-var axios          = require('axios')
-var checkModelName = require('../utils/checkModelName')
-var capitalize     = require('../utils/capitalize')
-var pluralize      = require('../utils/pluralize')
-var hostConfig     = require('../../config/host')
+var uuid            = require('uuid')
+var axios           = require('axios')
+var checkModelName  = require('../utils/checkModelName')
+var capitalize      = require('../utils/capitalize')
+var pluralize       = require('../utils/pluralize')
+var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var now = Date.now
 
-module.exports = function(modelName){
+module.exports = function(modelName, hostConfig){
+
+  if(!hostConfig || !hostConfig.host) throw new Error('You must instantiate redux-crud-async.primaryActionFor with a host => {host: "http://exemple.com"}')
 
   checkModelName(modelName)
 
@@ -132,7 +134,7 @@ module.exports = function(modelName){
       function success(models) {
         return {
           type              : PLURAL_FIND_SUCCESS,
-          [pluralModelName] : models,
+          [pluralModelName] : modelsWithTmpId(models),
           receivedAt        : now()
         }
       }

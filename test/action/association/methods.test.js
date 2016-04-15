@@ -1,5 +1,6 @@
 var should  = require('chai').should()
-var actions = require('../../../generators/associationActionGenerator')('channel', 'tag')
+var actions = require('../../../src/associationActionGenerator')('channel', 'tag', {host: '123'})
+
 
 describe('All actions methods', () => {
 

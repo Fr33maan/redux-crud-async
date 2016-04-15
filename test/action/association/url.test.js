@@ -1,5 +1,5 @@
 var rewire = require('rewire')
-var associationActionGenerator = rewire('../../../generators/associationActionGenerator')
+var associationActionGenerator = rewire('../../../src/associationActionGenerator')
 var sinon = require('sinon')
 var should = require('chai').should()
 
@@ -30,8 +30,8 @@ describe('associationActionGenerator', function() {
       host : 'host'
     }
 
-    associationActionGenerator.__set__({axios, hostConfig})
-    actions = associationActionGenerator('channel', 'tag')
+    associationActionGenerator.__set__({axios})
+    actions = associationActionGenerator('channel', 'tag', hostConfig)
   })
 
   beforeEach('reset spy states', () => {

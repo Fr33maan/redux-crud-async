@@ -1,10 +1,11 @@
 var rewire = require('rewire')
-var primaryActionGenerator = rewire('../../../generators/primaryActionGenerator')
+var primaryActionGenerator = rewire('../../../src/primaryActionGenerator')
 var sinon = require('sinon')
 var should = require('chai').should()
 
 var spy = {}
 var d = (action) => action
+var actionModule
 
 describe('primaryActionGenerator', function() {
 
@@ -21,11 +22,13 @@ describe('primaryActionGenerator', function() {
     spy.get  = sinon.spy(axios, 'get')
     spy.post = sinon.spy(axios, 'post')
 
+    primaryActionGenerator.__set__({axios})
+
     const hostConfig = {
       host : 'host'
     }
 
-    primaryActionGenerator.__set__({axios, hostConfig})
+    actionModule = primaryActionGenerator('channel', hostConfig)
 
   })
 
@@ -37,25 +40,25 @@ describe('primaryActionGenerator', function() {
   describe('find requests', () => {
 
     it('#findChannel', () => {
-      primaryActionGenerator('channel').findChannel('123')(d)
+      actionModule.findChannel('123')(d)
       spy.get.calledWith('host/channels/123').should.be.true
     })
 
     it('#findChannels with a request', () => {
-      primaryActionGenerator('channel').findChannels('limit=2&skip=3')(d)
+      actionModule.findChannels('limit=2&skip=3')(d)
 
       spy.get.calledWith('host/channels?limit=2&skip=3').should.be.true
     })
 
     it('#findChannels without request', () => {
-      primaryActionGenerator('channel').findChannels('')(d)
+      actionModule.findChannels('')(d)
 
       spy.get.callCount.should.equal(1)
       spy.get.calledWith('host/channels').should.be.true
     })
 
     it('#findChannels with default request', () => {
-      primaryActionGenerator('channel').findChannels()(d)
+      actionModule.findChannels()(d)
 
       spy.get.callCount.should.equal(1)
       spy.get.calledWith('host/channels?limit=10000').should.be.true
@@ -69,7 +72,7 @@ describe('primaryActionGenerator', function() {
 
       var channel = {foo : 'baz'}
 
-      primaryActionGenerator('channel').createChannel(channel)(d)
+      actionModule.createChannel(channel)(d)
       spy.post.calledWith('host/channels', channel).should.be.true
       spy.post.callCount.should.equal(1)
     })
@@ -77,14 +80,14 @@ describe('primaryActionGenerator', function() {
 
     it('#createChannel without a model should not call post', () => {
 
-      primaryActionGenerator('channel').createChannel()(d)
+      actionModule.createChannel()(d)
       spy.post.callCount.should.equal(0)
     })
 
 
     it('#createChannel with an empty model should not call post', () => {
 
-      primaryActionGenerator('channel').createChannel({})(d)
+      actionModule.createChannel({})(d)
       spy.post.callCount.should.equal(0)
     })
   })

@@ -1,5 +1,5 @@
 var rewire = require('rewire')
-var primaryActionGenerator = rewire('../../../generators/primaryActionGenerator')
+var primaryActionGenerator = rewire('../../../src/primaryActionGenerator')
 var sinon = require('sinon')
 var should = require('chai').should()
 
@@ -21,12 +21,16 @@ describe('primaryActionGenerator', function() {
       host : 'host'
     }
 
-    primaryActionGenerator.__set__({axios, hostConfig})
+    primaryActionGenerator.__set__({axios})
 
   })
 
   it('should call the prefixed url', () => {
-    actions('channel')
+    const hostConfig = {
+      host : 'host'
+    }
+
+    actions('channel', hostConfig)
     .findChannel('123')(() => {})
 
     get.calledWith('host/channels/123').should.be.true
@@ -34,13 +38,14 @@ describe('primaryActionGenerator', function() {
 
 
   it('should call the UNprefixed url', () => {
+    const hostConfig = {
+      host : 'host',
+      prefix : 'prefix'
+    }
 
-    primaryActionGenerator.__with__({hostConfig : {host: 'host', prefix : 'prefix'}})(() => {
-      actions('channel')
-      .findChannel('123')(() => {})
-
-      get.calledWith('host/prefix/channels/123').should.be.true
-    })
+    actions('channel', hostConfig)
+    .findChannel('123')(() => {})
+    get.calledWith('host/prefix/channels/123').should.be.true
 
   })
 });

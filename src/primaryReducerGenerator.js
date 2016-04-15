@@ -1,44 +1,29 @@
-import actionTypes from '../../redux/actions/actionTypes'
-import capitalize from '../utils/capitalize'
-import pluralize from '../utils/pluralize'
+var capitalize = require('../utils/capitalize')
+var pluralize  = require('../utils/pluralize')
 
 // console.log(actionTypes)
 
-export default (modelName) => {
+module.exports = function(modelName) {
 
   const singleModelName    = modelName
   const singleModelNameUp  = modelName.toUpperCase()
   const singleModelNameCap = capitalize(singleModelName)
 
-  const pluralModelName    = pluralize(modelName)
-  const pluralModelNameUp  = pluralModelName.toUpperCase()
+  const pluralModelName = pluralize(modelName)
+  const pluralModelNameUp = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
 
-  // --------------
-  // --- CREATE ---
-  // --------------
-  // -- SINGLE
-  const SINGLE_CREATE_START   = actionTypes[singleModelNameUp + '_CREATE_START']
-  const SINGLE_CREATE_SUCCESS = actionTypes[singleModelNameUp + '_CREATE_SUCCESS']
-  const SINGLE_CREATE_ERROR   = actionTypes[singleModelNameUp + '_CREATE_ERROR']
 
-  // -- PLURAL
-  const PLURAL_CREATE_START   = actionTypes[pluralModelNameUp + '_CREATE_START']
-  const PLURAL_CREATE_SUCCESS = actionTypes[pluralModelNameUp + '_CREATE_SUCCESS']
-  const PLURAL_CREATE_ERROR   = actionTypes[pluralModelNameUp + '_CREATE_ERROR']
+  var stateTypes  = ['START', 'SUCCESS', 'ERROR']
+  var actionTypes = ['FIND', 'CREATE', 'UPDATE', 'DELETE']
+  var A = {}
 
-  // --------------
-  // --- FECTH ----
-  // --------------
-  // -- SINGLE
-  const SINGLE_FIND_START   = actionTypes[singleModelNameUp + '_FIND_START']
-  const SINGLE_FIND_SUCCESS = actionTypes[singleModelNameUp + '_FIND_SUCCESS']
-  const SINGLE_FIND_ERROR   = actionTypes[singleModelNameUp + '_FIND_ERROR']
-
-  // -- PLURAL
-  const PLURAL_FIND_START   = actionTypes[pluralModelNameUp + '_FIND_START']
-  const PLURAL_FIND_SUCCESS = actionTypes[pluralModelNameUp + '_FIND_SUCCESS']
-  const PLURAL_FIND_ERROR   = actionTypes[pluralModelNameUp + '_FIND_ERROR']
+  for(const actionType of actionTypes){
+    for(const stateType of stateTypes){
+      A['SINGLE_' + actionType + '_' + stateType] = singleModelNameUp + '_' + actionType + '_' + stateType
+      A['PLURAL_' + actionType + '_' + stateType] = pluralModelNameUp + '_' + actionType + '_' + stateType
+    }
+  }
 
   return {
 
@@ -51,10 +36,10 @@ export default (modelName) => {
 
       switch (action.type) {
 
-        case SINGLE_FIND_START:
+        case A.SINGLE_FIND_START:
         return true
 
-        case SINGLE_FIND_SUCCESS:
+        case A.SINGLE_FIND_SUCCESS:
         return false
 
         default:
@@ -68,7 +53,7 @@ export default (modelName) => {
 
       switch (action.type) {
 
-        case SINGLE_FIND_SUCCESS:
+        case A.SINGLE_FIND_SUCCESS:
         return action[singleModelName] || state
 
         default:
@@ -87,11 +72,11 @@ export default (modelName) => {
 
       switch (action.type) {
 
-        case PLURAL_FIND_START:
+        case A.PLURAL_FIND_START:
         return true
 
-        case PLURAL_FIND_ERROR :
-        case PLURAL_FIND_SUCCESS:
+        case A.PLURAL_FIND_ERROR :
+        case A.PLURAL_FIND_SUCCESS:
         return false
 
         default:
@@ -105,7 +90,7 @@ export default (modelName) => {
 
       switch (action.type) {
 
-        case PLURAL_FIND_SUCCESS:
+        case A.PLURAL_FIND_SUCCESS:
           if(action[pluralModelName].length > 0){
             return action[pluralModelName].map(model => {
               return {
@@ -118,7 +103,7 @@ export default (modelName) => {
 
           return []
 
-        case SINGLE_CREATE_START:
+        case A.SINGLE_CREATE_START:
           return [
             ...state,
             {
@@ -128,7 +113,7 @@ export default (modelName) => {
             }
           ]
 
-        case SINGLE_CREATE_SUCCESS:
+        case A.SINGLE_CREATE_SUCCESS:
           return state.map(model => {
 
             if(model.tmpId === action[singleModelName].tmpId){
@@ -141,7 +126,7 @@ export default (modelName) => {
             return model
           })
 
-        case SINGLE_CREATE_ERROR:
+        case A.SINGLE_CREATE_ERROR:
           return state.filter(model => {
             return model.tmpId !== action[singleModelName].tmpId
           })

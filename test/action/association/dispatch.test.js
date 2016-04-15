@@ -5,9 +5,9 @@ import rewire from 'rewire'
 
 var should = require('chai').should()
 
-var actionModule = rewire('../../../generators/associationActionGenerator')
+var actionModule = rewire('../../../src/associationActionGenerator')
 var actions
-var actionTypes = require('../../../generators/associationActionTypeGenerator')('channel', 'tag')
+var actionTypes = require('../../../src/associationActionTypeGenerator')('channel', 'tag')
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
@@ -18,11 +18,10 @@ describe('async actions', () => {
   })
 
   before('rewire host with test values', () => {
-    actionModule.__set__({hostConfig :  {host : 'http://test.com'}})
     actionModule.__set__({now : () => 123})
     actionModule.__set__({'uuid.v4' : () => 'uuid'})
 
-    actions = actionModule('channel', 'tag')
+    actions = actionModule('channel', 'tag', {host: 'http://test.com'})
   })
 
 
@@ -35,7 +34,7 @@ describe('async actions', () => {
 
       const expectedActions = [
         { type: actionTypes.FIND_CHANNEL_TAGS_START },
-        { type: actionTypes.FIND_CHANNEL_TAGS_SUCCESS, receivedAt : 123, channelTags: [{name: 'im a channel'}] }
+        { type: actionTypes.FIND_CHANNEL_TAGS_SUCCESS, receivedAt : 123, channelTags: [{name: 'im a channel', tmpId: 'uuid'}] }
       ]
       const store = mockStore({ channelTags: [] })
 

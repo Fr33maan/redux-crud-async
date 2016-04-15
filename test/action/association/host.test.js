@@ -1,5 +1,5 @@
 var rewire = require('rewire')
-var associationActionGenerator = rewire('../../../generators/associationActionGenerator')
+var associationActionGenerator = rewire('../../../src/associationActionGenerator')
 var sinon = require('sinon')
 var should = require('chai').should()
 
@@ -21,8 +21,8 @@ describe('associationActionGenerator', function() {
       host : 'host'
     }
 
-    associationActionGenerator.__set__({axios, hostConfig})
-    actions = associationActionGenerator('channel', 'tag')
+    associationActionGenerator.__set__({axios})
+    actions = associationActionGenerator('channel', 'tag', hostConfig)
 
   })
 
@@ -40,12 +40,10 @@ describe('associationActionGenerator', function() {
 
   it('should call the UNprefixed url', () => {
 
-    associationActionGenerator.__with__({hostConfig : {host: 'host', prefix : 'prefix'}})(() => {
-      associationActionGenerator('channel' ,'tag')
-      .findChannelTags('123')(() => {})
+    associationActionGenerator('channel' ,'tag', {host: 'host', prefix : 'prefix'})
+    .findChannelTags('123')(() => {})
 
-      get.calledWith('host/prefix/channels/123/tags').should.be.true
-    })
+    get.calledWith('host/prefix/channels/123/tags').should.be.true
 
   })
 });

@@ -1,6 +1,6 @@
-import primaryActionTypeGenerator from '../../generators/primaryActionTypeGenerator'
+var assert = require('chai').assert
 
-var assert = require('chai').assert;
+import primaryActionTypeGenerator from '../../src/primaryActionTypeGenerator'
 var actionTypes = primaryActionTypeGenerator('model')
 
 describe('primaryActionTypeGenerator', function() {

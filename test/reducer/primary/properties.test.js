@@ -1,4 +1,4 @@
-import primaryReducerGenerator from '../../../generators/primaryReducerGenerator'
+var primaryReducerGenerator = require('../../../src/primaryReducerGenerator')
 
 var assert = require('chai').assert;
 var should = require('chai').should()

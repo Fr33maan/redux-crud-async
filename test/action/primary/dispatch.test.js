@@ -1,16 +1,16 @@
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import nock from 'nock'
-import rewire from 'rewire'
 
-var should = require('chai').should()
+var rewire        = require('rewire')
+var nock          = require('nock')
+var should        = require('chai').should()
 
-var actionModule = rewire('../../../generators/primaryActionGenerator')
-var actions = actionModule
-var actionTypes = require('../../../generators/primaryActionTypeGenerator')('channel')
+var actionModule  = rewire('../../../src/primaryActionGenerator')
+var actionTypes   = require('../../../src/primaryActionTypeGenerator')('channel')
 
+var actions       = actionModule
 const middlewares = [ thunk ]
-const mockStore = configureMockStore(middlewares)
+const mockStore   = configureMockStore(middlewares)
 
 describe('async actions', () => {
   afterEach(() => {
@@ -18,11 +18,10 @@ describe('async actions', () => {
   })
 
   before('rewire host with test values', () => {
-    actionModule.__set__({hostConfig :  {host : 'http://test.com'}})
     actionModule.__set__({now : () => 123})
-    actionModule.__set__({'uuid.v4' : () => 456})
+    actionModule.__set__({'uuid.v4' : () => 'uuid'})
 
-    actions = actions('channel')
+    actions = actions('channel', {host : 'http://test.com'})
   })
 
 
@@ -95,7 +94,7 @@ describe('async actions', () => {
 
       const expectedActions = [
         { type: actionTypes.CHANNELS_FIND_START },
-        { type: actionTypes.CHANNELS_FIND_SUCCESS, receivedAt : 123, channels: [{name: 'im a channel'}] }
+        { type: actionTypes.CHANNELS_FIND_SUCCESS, receivedAt : 123, channels: [{name: 'im a channel', tmpId: 'uuid'}] }
       ]
       const store = mockStore({ channels: [] })
 
@@ -138,7 +137,7 @@ describe('async actions', () => {
 
       var channelWithTmpId = {
         ...channelToCreate,
-        tmpId : 456
+        tmpId : 'uuid'
       }
 
       nock('http://test.com')
@@ -173,7 +172,7 @@ describe('async actions', () => {
 
       var channelWithTmpId = {
         ...channelToCreate,
-        tmpId : 456
+        tmpId : 'uuid'
       }
 
       nock('http://test.com')

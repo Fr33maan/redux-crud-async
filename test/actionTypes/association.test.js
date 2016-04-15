@@ -1,4 +1,4 @@
-import associationActionTypeGenerator from '../../generators/associationActionTypeGenerator'
+import associationActionTypeGenerator from '../../src/associationActionTypeGenerator'
 
 var assert = require('chai').assert;
 var actionTypes = associationActionTypeGenerator('channel', 'tag')

@@ -1,4 +1,4 @@
-import pluralize from '../utils/pluralize'
+var pluralize = require('../utils/pluralize')
 
 module.exports = function(primaryModel, associatedModel) {
 
