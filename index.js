@@ -1,20 +1,19 @@
 
-var primaryActionTypeGenerator    = require('./lib/primaryActionTypeGenerator')
-var primaryActionGenerator        = require('./lib/primaryActionGenerator')
-var primaryReducerGenerator       = require('./lib/primaryReducerGenerator')
+var primaryActionTypeGenerator     = require('./lib/primaryActionTypeGenerator')
+var primaryActionGenerator         = require('./lib/primaryActionGenerator')
+var primaryReducerGenerator        = require('./lib/primaryReducerGenerator')
 
-var associatedActionGenerator     = require('./lib/associationActionGenerator')
-var associatedActionTypeGenerator = require('./lib/associationActionTypeGenerator')
-var associatedReducerGenerator    = require('./lib/associationReducerGenerator')
+var associationActionGenerator     = require('./lib/associationActionGenerator')
+var associationActionTypeGenerator = require('./lib/associationActionTypeGenerator')
+var associationReducerGenerator    = require('./lib/associationReducerGenerator')
 
 
 var initModule = function(hostConfig) {
 
-  this.host = hostConfig.host || ''
-  this.prefix = hostConfig.prefix || ''
+  this.hostConfig = hostConfig || {}
 
   this.primaryActionTypesFor = function(primaryModel){
-    return primaryActionGenerator(primaryModel, hostConfig)
+    return primaryActionTypeGenerator(primaryModel)
   }
 
   this.primaryActionsFor = function(primaryModel){
@@ -22,21 +21,21 @@ var initModule = function(hostConfig) {
   }
 
   this.primaryReducerFor = function(primaryModel){
-    return primaryReducerGenerator(primaryModel, hostConfig)
+    return primaryReducerGenerator(primaryModel)
   }
 
 
 
   this.associationActionTypesFor = function(primaryModel, associatedModel){
-    return primaryActionGenerator(primaryModel, associatedModel, hostConfig)
+    return associationActionGenerator(primaryModel, associatedModel)
   }
 
   this.associationActionsFor = function(primaryModel, associatedModel){
-    return primaryActionGenerator(primaryModel, associatedModel, hostConfig)
+    return associationActionTypeGenerator(primaryModel, associatedModel, hostConfig)
   }
 
   this.associationReducerFor = function(primaryModel, associatedModel){
-    return primaryReducerGenerator(primaryModel, associatedModel, hostConfig)
+    return associationReducerGenerator(primaryModel, associatedModel)
   }
 
 }

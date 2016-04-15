@@ -1,6 +1,6 @@
 {
   "name": "redux-crud-async",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "async crud boilerplate for actions and reducers",
   "main": "index.js",
   "directories": {

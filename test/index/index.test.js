@@ -8,13 +8,12 @@ var crud                 = new reduxCrudAsyncModule({host : 'http://test.com', p
 describe('index.js', () => {
 
   it('should have a host properties', () => {
-    crud.should.have.property('host')
-    crud.host.should.equal('http://test.com')
+    crud.should.have.property('hostConfig')
+    crud.hostConfig.host.should.equal('http://test.com')
   })
 
   it('should have a prefix properties', () => {
-    crud.should.have.property('prefix')
-    crud.prefix.should.equal('v1')
+    crud.hostConfig.prefix.should.equal('v1')
   })
 
   it('should have a all generators as methods', () => {
