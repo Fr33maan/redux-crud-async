@@ -1,6 +1,5 @@
 # Redux CRUD Async
-[![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
+[![Build Status](https://travis-ci.org/prisonier/redux-crud-async.svg?branch=master)](https://travis-ci.org/prisonier/redux-crud-async)
 
 Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
 
