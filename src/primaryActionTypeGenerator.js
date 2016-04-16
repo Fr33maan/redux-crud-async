@@ -1,4 +1,4 @@
-var pluralize = require('../utils/pluralize')
+var pluralize  = require('pluralize')
 
 module.exports = function(modelName) {
 

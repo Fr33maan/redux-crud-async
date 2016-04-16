@@ -27,11 +27,11 @@ var initModule = function(hostConfig) {
 
 
   this.associationActionTypesFor = function(primaryModel, associatedModel){
-    return associationActionGenerator(primaryModel, associatedModel)
+    return associationActionTypesGenerator(primaryModel, associatedModel)
   }
 
   this.associationActionsFor = function(primaryModel, associatedModel){
-    return associationActionTypeGenerator(primaryModel, associatedModel, hostConfig)
+    return associationActionGenerator(primaryModel, associatedModel, hostConfig)
   }
 
   this.associationReducerFor = function(primaryModel, associatedModel){

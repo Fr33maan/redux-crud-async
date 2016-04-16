@@ -1,5 +1,5 @@
 var capitalize = require('../utils/capitalize')
-var pluralize  = require('../utils/pluralize')
+var pluralize  = require('pluralize')
 
 
 module.exports = function(primaryModel, associatedModel) {

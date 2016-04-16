@@ -1,8 +1,7 @@
-// import axios from 'axios'
 var uuid            = require('uuid')
 var axios           = require('axios')
 var capitalize      = require('../utils/capitalize')
-var pluralize       = require('../utils/pluralize')
+var pluralize       = require('pluralize')
 var checkModelName  = require('../utils/checkModelName')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var now = Date.now
@@ -15,9 +14,6 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   checkModelName(primaryModel)
   checkModelName(associatedModel)
 
-  const host   = hostConfig.host
-  const prefix = hostConfig.prefix
-  const baseUrl = host + (prefix ? '/' + prefix : '')
 
   const primaryModelName             = primaryModel
   const primaryModelNameCap          = capitalize(primaryModel)
@@ -31,6 +27,13 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   const pluralAssociatedModelName    = pluralize(associatedModel)
   const pluralAssociatedModelNameUp  = pluralize(associatedModel).toUpperCase()
   const pluralAssociatedModelNameCap = capitalize(pluralize(associatedModel))
+
+  const host    = hostConfig.host
+  const prefix  = hostConfig.prefix
+  const baseUrl = host + (prefix ? '/' + prefix : '')
+  const pluralizeUrl       = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
+  const urlPrimaryModel    = pluralizeUrl ? pluralPrimaryModelName    : primaryModelName
+  const urlAssociatedModel = pluralizeUrl ? pluralAssociatedModelName : singleAssociatedModelName
 
   const FIND_PRIMARY_ASSOCIATED_MODELS       = 'FIND_'    + primaryModelNameUp + '_' + pluralAssociatedModelNameUp
   const ADD_ASSOCIATED_MODEL_TO_PRIMARY      = 'ADD_'     + singleAssociatedModelNameUp + '_TO_' + primaryModelNameUp
@@ -73,7 +76,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
-        return axios.get(`${baseUrl}/${pluralPrimaryModelName}/${primaryModelId}/${pluralAssociatedModelName}${associatedModelId}`)
+        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`)
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, primaryModelId)))
       }
@@ -122,7 +125,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${pluralPrimaryModelName}/${primaryModelId}/${pluralAssociatedModelName}/${modelToAssociate.id}`)
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`)
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -132,7 +135,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${pluralPrimaryModelName}/${primaryModelId}/${pluralAssociatedModelName}`, modelToAssociate)
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate)
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -167,7 +170,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start(modelToDissociate))
 
-        return axios.delete(`${baseUrl}/${pluralPrimaryModelName}/${primaryModelId}/${pluralAssociatedModelName}/${modelToDissociate.id}`)
+        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`)
           .then(res => dispatch(success(modelToDissociate)))
           .catch(res => dispatch(error(res.data, modelToDissociate)))
       }

@@ -5,7 +5,7 @@ var should = require('chai').should()
 
 var spy = {}
 var d = (action) => action
-var actions
+var actions, singlizedActions
 
 describe('associationActionGenerator', function() {
 
@@ -32,6 +32,7 @@ describe('associationActionGenerator', function() {
 
     associationActionGenerator.__set__({axios})
     actions = associationActionGenerator('channel', 'tag', hostConfig)
+    singlizedActions = associationActionGenerator('channel', 'tag', {...hostConfig, pluralizeModels: false})
   })
 
   beforeEach('reset spy states', () => {
@@ -42,20 +43,30 @@ describe('associationActionGenerator', function() {
 
   describe('find requests', () => {
 
-    it('#findChannelTags without associatedModelId', () => {
+    it('#findChannelTags without associatedModelId - pluralized', () => {
       actions.findChannelTags('123')(d)
       spy.get.calledWith('host/channels/123/tags').should.be.true
     })
 
-    it('#findChannelTags with an associatedModelId', () => {
+    it('#findChannelTags without associatedModelId - singlized', () => {
+      singlizedActions.findChannelTags('123')(d)
+      spy.get.calledWith('host/channel/123/tag').should.be.true
+    })
+
+    it('#findChannelTags with an associatedModelId - pluralized', () => {
       actions.findChannelTags('123', '456')(d)
       spy.get.calledWith('host/channels/123/tags/456').should.be.true
+    })
+
+    it('#findChannelTags with an associatedModelId - singlized', () => {
+      singlizedActions.findChannelTags('123', '456')(d)
+      spy.get.calledWith('host/channel/123/tag/456').should.be.true
     })
   })
 
   describe('add requests', () => {
 
-    it('#addTagToChannel when modelToAssociate does not exists in database (do not have an "id" property)', () => {
+    it('#addTagToChannel when modelToAssociate does not exists in database (do not have an "id" property) - pluralized', () => {
 
       var modelToAssociate = {
         foo : 'bar'
@@ -66,7 +77,18 @@ describe('associationActionGenerator', function() {
       spy.post.callCount.should.equal(1)
     })
 
-    it('#addTagToChannel when modelToAssociate already exists in database (already have an "id" property)', () => {
+    it('#addTagToChannel when modelToAssociate does not exists in database (do not have an "id" property) - singlized', () => {
+
+      var modelToAssociate = {
+        foo : 'bar'
+      }
+
+      singlizedActions.addTagToChannel('123', modelToAssociate)(d)
+      spy.post.args.should.eql([['host/channel/123/tag', modelToAssociate]])
+      spy.post.callCount.should.equal(1)
+    })
+
+    it('#addTagToChannel when modelToAssociate already exists in database (already have an "id" property) - pluralized', () => {
 
       var modelToAssociate = {
         id: 456,
@@ -75,6 +97,18 @@ describe('associationActionGenerator', function() {
 
       actions.addTagToChannel('123', modelToAssociate)(d)
       spy.post.calledWith('host/channels/123/tags/456').should.be.true
+      spy.post.callCount.should.equal(1)
+    })
+
+    it('#addTagToChannel when modelToAssociate already exists in database (already have an "id" property) - singlized', () => {
+
+      var modelToAssociate = {
+        id: 456,
+        foo : 'bar'
+      }
+
+      singlizedActions.addTagToChannel('123', modelToAssociate)(d)
+      spy.post.calledWith('host/channel/123/tag/456').should.be.true
       spy.post.callCount.should.equal(1)
     })
 
@@ -94,7 +128,7 @@ describe('associationActionGenerator', function() {
 
   describe('remove requests', () => {
 
-    it('#removeTagFromChannel', () => {
+    it('#removeTagFromChannel - pluralized', () => {
 
       var modelToDissociate = {
         id: 456,
@@ -103,6 +137,18 @@ describe('associationActionGenerator', function() {
 
       actions.removeTagFromChannel('123', modelToDissociate)(d)
       spy.delete.calledWith('host/channels/123/tags/456').should.be.true
+      spy.delete.callCount.should.equal(1)
+    })
+
+    it('#removeTagFromChannel - single', () => {
+
+      var modelToDissociate = {
+        id: 456,
+        foo : 'bar'
+      }
+
+      singlizedActions.removeTagFromChannel('123', modelToDissociate)(d)
+      spy.delete.calledWith('host/channel/123/tag/456').should.be.true
       spy.delete.callCount.should.equal(1)
     })
   })

@@ -2,7 +2,7 @@ var uuid            = require('uuid')
 var axios           = require('axios')
 var checkModelName  = require('../utils/checkModelName')
 var capitalize      = require('../utils/capitalize')
-var pluralize       = require('../utils/pluralize')
+var pluralize       = require('pluralize')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var now = Date.now
 
@@ -12,9 +12,7 @@ module.exports = function(modelName, hostConfig){
 
   checkModelName(modelName)
 
-  var host = hostConfig.host
-  var prefix = hostConfig.prefix
-  const baseUrl = host + (prefix ? '/' + prefix : '')
+
 
   const singleModelName    = modelName
   const singleModelNameUp  = modelName.toUpperCase()
@@ -23,6 +21,13 @@ module.exports = function(modelName, hostConfig){
   const pluralModelName    = pluralize(modelName)
   const pluralModelNameUp  = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
+
+  var host           = hostConfig.host
+  var prefix         = hostConfig.prefix
+  const baseUrl      = host + (prefix ? '/' + prefix : '')
+  const pluralizeUrl = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
+  const urlModel     = pluralizeUrl ? pluralModelName : singleModelName
+
 
   // --------------
   // --- CREATE ---
@@ -113,7 +118,7 @@ module.exports = function(modelName, hostConfig){
         }
 
         dispatch(start())
-        return axios.get(`${baseUrl}/${pluralModelName}/${modelId}`)
+        return axios.get(`${baseUrl}/${urlModel}/${modelId}`)
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, modelId)))
       }
@@ -146,7 +151,7 @@ module.exports = function(modelName, hostConfig){
       }
       return dispatch => {
         dispatch(start())
-        return axios.get(`${baseUrl}/${pluralModelName}${request}`)
+        return axios.get(`${baseUrl}/${urlModel}${request}`)
           .then(res => dispatch(success(res.data.data)))
           .catch(res =>dispatch(error(res.data)))
       }
@@ -194,7 +199,7 @@ module.exports = function(modelName, hostConfig){
           if(attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute]
         }
 
-        return axios.post(`${baseUrl}/${pluralModelName}`,modelToCreate)
+        return axios.post(`${baseUrl}/${urlModel}`,modelToCreate)
           .then(res => dispatch(success(modelWithTmpId)))
           .catch(res => dispatch(error(res.data, modelWithTmpId)))
       }
