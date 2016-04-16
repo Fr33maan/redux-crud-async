@@ -147,8 +147,9 @@ describe('associationReducerGenerator -- #channelTags', function() {
       }]
 
       var action = {
-        type: 'ADD_TAG_TO_CHANNEL_ERROR',
-        channelTag: previousState[1]
+        type  : 'ADD_TAG_TO_CHANNEL_ERROR',
+        data  : previousState[1],
+        error : 'error'
       }
 
       var state = reducer.channelTags(previousState, action)
@@ -232,8 +233,9 @@ describe('associationReducerGenerator -- #channelTags', function() {
       }]
 
       var action = {
-        type: 'REMOVE_TAG_FROM_CHANNEL_ERROR',
-        channelTag: previousState[1]
+        type  : 'REMOVE_TAG_FROM_CHANNEL_ERROR',
+        data  : previousState[1],
+        error : 'error'
       }
 
       var state = reducer.channelTags(previousState, action)

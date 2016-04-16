@@ -145,8 +145,9 @@ describe('primaryReducerGenerator -- #models', function() {
         var previousState = [createdModel, creatingModel]
 
         var action = {
-          type: 'MODEL_CREATE_ERROR',
-          model: creatingModel
+          type  : 'MODEL_CREATE_ERROR',
+          data  : creatingModel,
+          error : 'im an error'
         }
 
         var state = reducer.models(previousState, action)

@@ -198,10 +198,12 @@ module.exports = function(modelName, hostConfig){
         for(let attribute in modelWithTmpId){
           if(attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute]
         }
-
-        return axios.post(`${baseUrl}/${urlModel}`,modelToCreate)
-          .then(res => dispatch(success(modelWithTmpId)))
-          .catch(res => dispatch(error(res.data, modelWithTmpId)))
+        try{
+          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate)
+            .then(res => dispatch(success(modelWithTmpId)))
+            .catch(res => dispatch(error(res.data, modelWithTmpId)))
+        }catch(e){console.log(e)}
+ 
       }
 
     },

@@ -128,7 +128,7 @@ module.exports = function(modelName) {
 
         case A.SINGLE_CREATE_ERROR:
           return state.filter(model => {
-            return model.tmpId !== action[singleModelName].tmpId
+            return model.tmpId !== action.data.tmpId
           })
 
         default:

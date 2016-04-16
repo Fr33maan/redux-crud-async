@@ -111,7 +111,7 @@ module.exports = function(primaryModel, associatedModel) {
         case A.ADD_ASSOCIATED_MODEL_TO_PRIMARY_ERROR:
 
           return state.filter(model => {
-            return model.tmpId !== action[singlePrimaryModelName + singleAssociatedModelNameCap].tmpId
+            return model.tmpId !== action.data.tmpId
           })
 
 
@@ -133,7 +133,7 @@ module.exports = function(primaryModel, associatedModel) {
 
         case A.REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY_ERROR:
           return state.map(model => {
-            return model.tmpId === action[singlePrimaryModelName + singleAssociatedModelNameCap].tmpId ? {...model, removing: false} : model
+            return model.tmpId === action.data.tmpId ? {...model, removing: false} : model
           })
 
         default:
