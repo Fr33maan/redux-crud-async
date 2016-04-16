@@ -185,10 +185,10 @@ Reducers return the following states usable in your components
   var crud = new reduxCrudAsync()
 
   module.exports = {
-    ...crud.primaryReducerFor('channel'),
-    ...crud.primaryReducerFor('tag'),
+    ...crud.primaryReducerFor('user'),
+    ...crud.primaryReducerFor('pet'),
 
-    ...crud.associationReducerFor('channel', 'tag')
+    ...crud.associationReducerFor('user', 'pet')
   }
 
 ```
