@@ -195,7 +195,7 @@ Reducers return the following states usable in your components
 
 # Using it in a controller
 
-[Click here to see how much it is easy to use this module in a container](https://github.com/prisonier/redux-crud-async)
+[Click here to see how much it is easy to use this module in a container](https://github.com/prisonier/redux-crud-async/blob/master/exemples/Container.jsx)
 
 
 # TODO
