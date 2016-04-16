@@ -1,4 +1,7 @@
 # Redux CRUD Async
+[![NPM version][npm-image]][npm-url]
+[![Build status][travis-image]][travis-url]
+
 Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
 
 It currently uses [axios](https://github.com/mzabriskie/axios) for xhr but I plan to also
