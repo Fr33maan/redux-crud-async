@@ -14,30 +14,30 @@ It differentiate singular and plural model name : findUser !== findUsers
 **IMPORTANT !**
 As sails.js, this module uses [pluralize module](https://www.npmjs.com/package/pluralize) which pluralize words for real.
 
-some exemples : \s
-channel -> channels \s
-person  -> people \s
-coach   -> coaches \s
+some exemples : \s\s
+channel -> channels \s\s
+person  -> people \s\s
+coach   -> coaches \s\s
 
 By default, all your routes will be pluralized, `Person` model will have the following :
 
-state : \s
-person - a single person \s
-findPerson -> will hit `GET /people/:id` \s
-\s
-people - all your "persons" \s
-findPeople -> will hit `GET /people` \s
+state : \s\s
+person - a single person \s\s
+findPerson -> will hit `GET /people/:id` \s\s
+\s\s
+people - all your "persons" \s\s
+findPeople -> will hit `GET /people` \s\s
 
 
 ## Action types
 #### Async flow
 
-There is a maximum of 7 actions for a given model.\s
-eg. primary model = `channel`, associated model = `tag`\s
-\s
-4 primary     -> FIND_MODEL, CREATE_MODEL, UPDATE_MODEL and DELETE_MODEL\s
-3 association -> FIND_CHANNEL_TAGS, ADD_TAG_TO_CHANNEL, REMOVE_TAG_FROM_CHANNEL\s
-3 status actions are dispatched for every async action : START, SUCCESS and ERROR\s
+There is a maximum of 7 actions for a given model.\s\s
+eg. primary model = `channel`, associated model = `tag`\s\s
+\s\s
+4 primary     -> FIND_MODEL, CREATE_MODEL, UPDATE_MODEL and DELETE_MODEL\s\s
+3 association -> FIND_CHANNEL_TAGS, ADD_TAG_TO_CHANNEL, REMOVE_TAG_FROM_CHANNEL\s\s
+3 status actions are dispatched for every async action : START, SUCCESS and ERROR\s\s
 
 
 ## Actions available
