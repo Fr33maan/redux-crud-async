@@ -21,7 +21,8 @@
     "crud",
     "async",
     "boilerplate",
-    "sails"
+    "sails",
+    "redux-crud"
   ],
   "author": "prisonier",
   "license": "GPL-3.0",
