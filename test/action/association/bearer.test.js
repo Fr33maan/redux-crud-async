@@ -37,8 +37,8 @@ describe('bearers for associationActionGenerator', function() {
       }
     }
 
-    var sessionStorage = {getItem : function(msg){return msg}}
-    associationActionGenerator.__set__({axios, sessionStorage})
+    var windowAccess = {sessionStorage: {getItem : function(msg){return msg}}}
+    associationActionGenerator.__set__({axios, windowAccess})
 
     actionModule = associationActionGenerator('coach', 'comment', hostConfig)
   })

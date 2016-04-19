@@ -1,11 +1,11 @@
+var path            = require('object-path')
 var uuid            = require('uuid')
-var path              = require('object-path')
 var axios           = require('axios')
+var checkModelName  = require('../utils/checkModelName')
 var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
-var checkModelName  = require('../utils/checkModelName')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
-var sessionStorage = sessionStorage
+var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
 
@@ -41,16 +41,19 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   var bearers = {}
   var authConfig = path.get(hostConfig, `apiSpecs.${primaryModelName}${pluralAssociatedModelNameCap}.auth`)
   var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
-  var hasSessionStorage = path.get(sessionStorage, 'getItem')
+  var hasSessionStorage = path.get(windowAccess, 'sessionStorage.getItem');
 
   if(authConfig && hasSessionStorage){
 
-    let JWT_Token = sessionStorage.getItem(sessionStorageName)
-
     authConfig.forEach(action => {
-        bearers[action] = {
+      // Return a function to get the token each time the action is dispatched
+      bearers[action] = function() {
+        let JWT_Token = windowAccess.sessionStorage.getItem(sessionStorageName)
+
+        return {
           headers : {'Authorization': `Bearer ${JWT_Token}`}
         }
+      }
     })
   }
 
@@ -100,7 +103,11 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
-        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`, bearers[findPrimaryAssociatedModels])
+
+        // If a rule exists we execute the function to get the token dynamically
+        let bearer = typeof bearers[findPrimaryAssociatedModels] !== 'undefined' ? bearers[findPrimaryAssociatedModels]() : undefined
+
+        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`, bearer)
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, primaryModelId)))
       }
@@ -144,12 +151,15 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       }
 
 
+      // If a rule exists we execute the function to get the token dynamically
+      let bearer = typeof bearers[addAssociatedModelToPrimary] !== 'undefined' ? bearers[addAssociatedModelToPrimary]() : undefined
+
       // Means that model has already been created in database
       if('id' in modelToAssociate){
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`, bearers[addAssociatedModelToPrimary])
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`, bearer)
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -159,7 +169,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate , bearers[addAssociatedModelToPrimary])
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate , bearer)
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -193,8 +203,10 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
 
       return dispatch => {
         dispatch(start(modelToDissociate))
+        // If a rule exists we execute the function to get the token dynamically
+        let bearer = typeof bearers[removeAssociatedModelFromPrimary] !== 'undefined' ? bearers[removeAssociatedModelFromPrimary]() : undefined
 
-        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`, bearers[removeAssociatedModelFromPrimary])
+        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`, bearer)
           .then(res => dispatch(success(modelToDissociate)))
           .catch(res => dispatch(error(res.data, modelToDissociate)))
       }

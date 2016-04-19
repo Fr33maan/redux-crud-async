@@ -1,12 +1,12 @@
-var path              = require('object-path')
-var uuid              = require('uuid')
-var axios             = require('axios')
-var checkModelName    = require('../utils/checkModelName')
-var capitalize        = require('../utils/capitalize')
-var pluralize         = require('pluralize')
-var modelsWithTmpId   = require('../utils/arrayItemsWithTmpId')
+var path            = require('object-path')
+var uuid            = require('uuid')
+var axios           = require('axios')
+var checkModelName  = require('../utils/checkModelName')
+var capitalize      = require('../utils/capitalize')
+var pluralize       = require('pluralize')
+var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
+var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
-var windowAccess = typeof window !== 'undefined' ? window : {}
 
 var chalk             = require('chalk')
 var redError = msg => console.log(msg)
@@ -72,7 +72,7 @@ module.exports = function(modelName, hostConfig){
   const PLURAL_CREATE_START   = pluralModelNameUp + '_CREATE_START'
   const PLURAL_CREATE_SUCCESS = pluralModelNameUp + '_CREATE_SUCCESS'
   const PLURAL_CREATE_ERROR   = pluralModelNameUp + '_CREATE_ERROR'
- 
+
 
   // --------------
   // ---- FIND ----
