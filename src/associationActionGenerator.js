@@ -5,8 +5,7 @@ var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
 var checkModelName  = require('../utils/checkModelName')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
-var getSessionStorage = require('../utils/getSessionStorage')
-var window = window
+var sessionStorage = sessionStorage
 var now = Date.now
 
 
@@ -42,11 +41,11 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   var bearers = {}
   var authConfig = path.get(hostConfig, `apiSpecs.${primaryModelName}${pluralAssociatedModelNameCap}.auth`)
   var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
-  var hasSessionStorage = typeof window !== 'undefined' && path.get(window, 'sessionStorage.getItem')
+  var hasSessionStorage = path.get(sessionStorage, 'getItem')
 
   if(authConfig && hasSessionStorage){
 
-    let JWT_Token = window.sessionStorage.getItem(sessionStorageName)
+    let JWT_Token = sessionStorage.getItem(sessionStorageName)
 
     authConfig.forEach(action => {
         bearers[action] = {
