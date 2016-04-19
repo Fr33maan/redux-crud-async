@@ -5,9 +5,8 @@ var checkModelName    = require('../utils/checkModelName')
 var capitalize        = require('../utils/capitalize')
 var pluralize         = require('pluralize')
 var modelsWithTmpId   = require('../utils/arrayItemsWithTmpId')
-var getSessionStorage = require('../utils/getSessionStorage')
 var now = Date.now
-
+var window = window
 
 var chalk             = require('chalk')
 var redError = msg => console.log(msg)
@@ -40,10 +39,12 @@ module.exports = function(modelName, hostConfig){
   var bearers = {}
   var authConfig = path.get(hostConfig, `apiSpecs.${singleModelName}.auth`)
   var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
+  var hasSessionStorage = typeof window !== 'undefined' && path.get(window, 'sessionStorage.getItem')
 
-  if(authConfig && getSessionStorage){
 
-    let JWT_Token = getSessionStorage(sessionStorageName)
+  if(authConfig && hasSessionStorage){
+
+    let JWT_Token = window.sessionStorage.getItem(sessionStorageName)
 
     authConfig.forEach(action => {
         bearers[action] = {

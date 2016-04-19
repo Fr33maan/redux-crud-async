@@ -20,13 +20,12 @@ describe('bearers for primaryActionGenerator', function() {
       }
     }
 
-    var getSessionStorage = function(msg){return msg}
+    var window = {sessionStorage: {getItem : function(msg){return msg}}}
 
     spy.get               = sinon.spy(axios, 'get')
     spy.post              = sinon.spy(axios, 'post')
-    spy.getSessionStorage = sinon.spy(getSessionStorage)
 
-    primaryActionGenerator.__set__({axios, getSessionStorage})
+    primaryActionGenerator.__set__({axios, window})
 
     const hostConfig = {
       host : 'host',

@@ -211,7 +211,10 @@ Reducers return the following states usable in your components
 
 
 # TODO
+- write doc about new feature -> JWT
+- document api expectations and make them editables
 - comment code
+- add single actions
 - update & delete for model & models
 - overwrite urls for integration with other APIs
 - websocket support for sails
