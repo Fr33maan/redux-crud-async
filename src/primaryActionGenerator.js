@@ -6,8 +6,7 @@ var capitalize        = require('../utils/capitalize')
 var pluralize         = require('pluralize')
 var modelsWithTmpId   = require('../utils/arrayItemsWithTmpId')
 var now = Date.now
-
-var sessionStorage = sessionStorage
+var windowAccess = typeof window !== 'undefined' ? window : {}
 
 var chalk             = require('chalk')
 var redError = msg => console.log(msg)
@@ -40,16 +39,19 @@ module.exports = function(modelName, hostConfig){
   var bearers = {}
   var authConfig = path.get(hostConfig, `apiSpecs.${singleModelName}.auth`)
   var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
-  var hasSessionStorage = path.get(sessionStorage, 'getItem')
-
+  var hasSessionStorage = path.get(windowAccess, 'sessionStorage.getItem');
 
   if(authConfig && hasSessionStorage){
 
-    let JWT_Token = sessionStorage.getItem(sessionStorageName)
-
     authConfig.forEach(action => {
-        bearers[action] = {
-          headers : {'Authorization': `Bearer ${JWT_Token}`}
+
+        // Return a function to get the token each time the action is dispatched
+        bearers[action] = function() {
+          let JWT_Token = windowAccess.sessionStorage.getItem(sessionStorageName)
+
+          return {
+            headers : {'Authorization': `Bearer ${JWT_Token}`}
+          }
         }
     })
   }
@@ -147,7 +149,11 @@ module.exports = function(modelName, hostConfig){
         }
 
         dispatch(start())
-        return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearers[findModel])
+
+        // If a rule exists we execute the function to get the token dynamically
+        let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
+
+        return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearer)
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, modelId)))
       }
@@ -180,7 +186,10 @@ module.exports = function(modelName, hostConfig){
       }
       return dispatch => {
         dispatch(start())
-        return axios.get(`${baseUrl}/${urlModel}${request}`, bearers[findModels])
+
+        let bearer = typeof bearers[findModels] !== 'undefined' ? bearers[findModels]() : undefined
+
+        return axios.get(`${baseUrl}/${urlModel}${request}`, bearer)
           .then(res => dispatch(success(res.data.data)))
           .catch(res =>dispatch(error(res.data)))
       }
@@ -228,7 +237,8 @@ module.exports = function(modelName, hostConfig){
           if(attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute]
         }
         try{
-          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearers[createModel])
+          let bearer = typeof bearers[createModel] !== 'undefined' ? bearers[createModel]() : undefined
+          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearer)
             .then(res => dispatch(success(modelWithTmpId)))
             .catch(res => dispatch(error(res.data, modelWithTmpId)))
         }catch(e){redError}
