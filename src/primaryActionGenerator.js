@@ -72,7 +72,7 @@ module.exports = function(modelName, hostConfig){
   const PLURAL_CREATE_START   = pluralModelNameUp + '_CREATE_START'
   const PLURAL_CREATE_SUCCESS = pluralModelNameUp + '_CREATE_SUCCESS'
   const PLURAL_CREATE_ERROR   = pluralModelNameUp + '_CREATE_ERROR'
-
+ 
 
   // --------------
   // ---- FIND ----
