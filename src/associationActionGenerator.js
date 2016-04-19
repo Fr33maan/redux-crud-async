@@ -1,9 +1,11 @@
 var uuid            = require('uuid')
+var path              = require('object-path')
 var axios           = require('axios')
 var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
 var checkModelName  = require('../utils/checkModelName')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
+var getSessionStorage = require('../utils/getSessionStorage')
 var now = Date.now
 
 
@@ -25,8 +27,8 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   const singleAssociatedModelNameUp  = associatedModel.toUpperCase()
 
   const pluralAssociatedModelName    = pluralize(associatedModel)
-  const pluralAssociatedModelNameUp  = pluralize(associatedModel).toUpperCase()
   const pluralAssociatedModelNameCap = capitalize(pluralize(associatedModel))
+  const pluralAssociatedModelNameUp  = pluralize(associatedModel).toUpperCase()
 
   const host    = hostConfig.host
   const prefix  = hostConfig.prefix
@@ -34,6 +36,27 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   const pluralizeUrl       = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
   const urlPrimaryModel    = pluralizeUrl ? pluralPrimaryModelName    : primaryModelName
   const urlAssociatedModel = pluralizeUrl ? pluralAssociatedModelName : singleAssociatedModelName
+
+
+  var bearers = {}
+  var authConfig = path.get(hostConfig, `apiSpecs.${primaryModelName}${pluralAssociatedModelNameCap}.auth`)
+  var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
+
+  if(authConfig && getSessionStorage){
+
+    let JWT_Token = getSessionStorage(sessionStorageName)
+
+    authConfig.forEach(action => {
+        bearers[action] = {
+          headers : {'Authorization': `Bearer ${JWT_Token}`}
+        }
+    })
+  }
+
+  const findPrimaryAssociatedModels      = 'find' + primaryModelNameCap + pluralAssociatedModelNameCap
+  const addAssociatedModelToPrimary      = 'add' + singleAssociatedModelNameCap + 'To' + primaryModelNameCap
+  const removeAssociatedModelFromPrimary = 'remove' + singleAssociatedModelNameCap + 'From' + primaryModelNameCap
+
 
   const FIND_PRIMARY_ASSOCIATED_MODELS       = 'FIND_'    + primaryModelNameUp + '_' + pluralAssociatedModelNameUp
   const ADD_ASSOCIATED_MODEL_TO_PRIMARY      = 'ADD_'     + singleAssociatedModelNameUp + '_TO_' + primaryModelNameUp
@@ -54,7 +77,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
     // ----------------------
     // Find associated models
     // ----------------------
-    ['find' + primaryModelNameCap + pluralAssociatedModelNameCap] : (primaryModelId, associatedModelId) => {
+    [findPrimaryAssociatedModels] : (primaryModelId, associatedModelId) => {
 
       function start() {
         return {type: A.FIND_PRIMARY_ASSOCIATED_MODELS_START}
@@ -76,7 +99,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
-        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`)
+        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`, bearers[findPrimaryAssociatedModels])
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, primaryModelId)))
       }
@@ -87,7 +110,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
     // --------------------
     // Add associated model
     // --------------------
-    ['add' + singleAssociatedModelNameCap + 'To' + primaryModelNameCap] : (primaryModelId, modelToAssociate, alreadyAssociatedModels) => {
+    [addAssociatedModelToPrimary] : (primaryModelId, modelToAssociate, alreadyAssociatedModels) => {
       function start(modelToAssociate) {
         return {
           type: A.ADD_ASSOCIATED_MODEL_TO_PRIMARY_START,
@@ -125,7 +148,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`)
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`, bearers[addAssociatedModelToPrimary])
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -135,7 +158,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate)
+          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate , bearers[addAssociatedModelToPrimary])
             .then(res => dispatch(success(associatedModelWithTmpId)))
             .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
@@ -146,7 +169,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
     // -----------------------
     // Remove associated model
     // -----------------------
-    ['remove' + singleAssociatedModelNameCap + 'From' + primaryModelNameCap] : (primaryModelId, modelToDissociate) => {
+    [removeAssociatedModelFromPrimary] : (primaryModelId, modelToDissociate) => {
       function start(modelToDissociate) {
         return {
           type                        : A.REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY_START,
@@ -170,7 +193,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start(modelToDissociate))
 
-        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`)
+        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`, bearers[removeAssociatedModelFromPrimary])
           .then(res => dispatch(success(modelToDissociate)))
           .catch(res => dispatch(error(res.data, modelToDissociate)))
       }

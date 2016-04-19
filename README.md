@@ -32,11 +32,21 @@ findPeople -> will hit `GET /people`
 ## Action types
 #### Async flow
 
-There is a maximum of 7 actions for a given model.  
+There is a maximum of **7** actions for a given model.  
 eg. primary model = `channel`, associated model = `tag`  
 
-4 primary     -> **FIND_MODEL**, **CREATE_MODEL**, **UPDATE_MODEL** and **DELETE_MODEL**  
-3 association -> **FIND_CHANNEL_TAGS**, **ADD_TAG_TO_CHANNEL**, **REMOVE_TAG_FROM_CHANNEL**  
+4 primary     ->
+> **FIND_CHANNEL**
+> **CREATE_CHANNEL**
+> **UPDATE_CHANNEL**
+> **DELETE_CHANNEL**  
+
+3 association ->
+> **FIND_CHANNEL_TAGS**
+> **ADD_TAG_TO_CHANNEL**
+> **REMOVE_TAG_FROM_CHANNEL**
+
+
 3 status actions are dispatched for every async action : **START**, **SUCCESS** and **ERROR**    
 
 

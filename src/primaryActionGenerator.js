@@ -1,18 +1,23 @@
-var uuid            = require('uuid')
-var axios           = require('axios')
-var checkModelName  = require('../utils/checkModelName')
-var capitalize      = require('../utils/capitalize')
-var pluralize       = require('pluralize')
-var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
+var path              = require('object-path')
+var uuid              = require('uuid')
+var axios             = require('axios')
+var checkModelName    = require('../utils/checkModelName')
+var capitalize        = require('../utils/capitalize')
+var pluralize         = require('pluralize')
+var modelsWithTmpId   = require('../utils/arrayItemsWithTmpId')
+var getSessionStorage = require('../utils/getSessionStorage')
 var now = Date.now
+
+
+var chalk             = require('chalk')
+var redError = msg => console.log(msg)
+
 
 module.exports = function(modelName, hostConfig){
 
   if(!hostConfig || !hostConfig.host) throw new Error('You must instantiate redux-crud-async.primaryActionFor with a host => {host: "http://exemple.com"}')
 
   checkModelName(modelName)
-
-
 
   const singleModelName    = modelName
   const singleModelNameUp  = modelName.toUpperCase()
@@ -22,12 +27,34 @@ module.exports = function(modelName, hostConfig){
   const pluralModelNameUp  = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
 
+
+  // ---------------
+  // --HOST CONFIG--
+  // ---------------
   var host           = hostConfig.host
   var prefix         = hostConfig.prefix
   const baseUrl      = host + (prefix ? '/' + prefix : '')
   const pluralizeUrl = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
   const urlModel     = pluralizeUrl ? pluralModelName : singleModelName
 
+  var bearers = {}
+  var authConfig = path.get(hostConfig, `apiSpecs.${singleModelName}.auth`)
+  var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
+
+  if(authConfig && getSessionStorage){
+
+    let JWT_Token = getSessionStorage(sessionStorageName)
+
+    authConfig.forEach(action => {
+        bearers[action] = {
+          headers : {'Authorization': `Bearer ${JWT_Token}`}
+        }
+    })
+  }
+
+  const findModel   = 'find' + singleModelNameCap
+  const findModels  = 'find' + pluralModelNameCap
+  const createModel = 'create' + singleModelNameCap
 
   // --------------
   // --- CREATE ---
@@ -90,7 +117,7 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // FIND SINGLE MODEL
     // -------------------
-    ['find' + singleModelNameCap] : (modelId) => {
+    [findModel] : (modelId) => {
       function start() {
         return {type: SINGLE_FIND_START}
       }
@@ -118,7 +145,7 @@ module.exports = function(modelName, hostConfig){
         }
 
         dispatch(start())
-        return axios.get(`${baseUrl}/${urlModel}/${modelId}`)
+        return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearers[findModel])
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, modelId)))
       }
@@ -129,7 +156,7 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // FIND PLURAL MODEL
     // -------------------
-    ['find' + pluralModelNameCap] : (request = 'limit=10000') => {
+    [findModels] : (request = 'limit=10000') => {
 
       request = request.length > 0 ? '?' + request : ''
 
@@ -151,7 +178,7 @@ module.exports = function(modelName, hostConfig){
       }
       return dispatch => {
         dispatch(start())
-        return axios.get(`${baseUrl}/${urlModel}${request}`)
+        return axios.get(`${baseUrl}/${urlModel}${request}`, bearers[findModels])
           .then(res => dispatch(success(res.data.data)))
           .catch(res =>dispatch(error(res.data)))
       }
@@ -162,7 +189,7 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // CREATE SINGLE MODEL
     // -------------------
-    ['create' + singleModelNameCap] : (model) => {
+    [createModel] : (model) => {
       function start(model) {
         return {
           type: SINGLE_CREATE_START,
@@ -199,11 +226,11 @@ module.exports = function(modelName, hostConfig){
           if(attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute]
         }
         try{
-          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate)
+          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearers[createModel])
             .then(res => dispatch(success(modelWithTmpId)))
             .catch(res => dispatch(error(res.data, modelWithTmpId)))
-        }catch(e){console.log(e)}
- 
+        }catch(e){redError}
+
       }
 
     },

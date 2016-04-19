@@ -7,9 +7,9 @@ var spy = {}
 var d = (action) => action
 var actionModule, singlizedActions
 
-describe('primaryActionGenerator', function() {
+describe('requests for primaryActionGenerator', function() {
 
-  before('Rewire and spy axios module and host config', () => {
+  before('Rewire and spy axios module && host config', () => {
     var axios = {
       get : arg => {
         return new Promise(resolve => {resolve({data:{data:[]}}); })

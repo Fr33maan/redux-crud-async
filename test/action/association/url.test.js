@@ -73,7 +73,7 @@ describe('associationActionGenerator', function() {
       }
 
       actions.addTagToChannel('123', modelToAssociate)(d)
-      spy.post.args.should.eql([['host/channels/123/tags', modelToAssociate]])
+      spy.post.args.should.eql([['host/channels/123/tags', modelToAssociate, undefined]]) // undefined because of bearers
       spy.post.callCount.should.equal(1)
     })
 
@@ -84,7 +84,7 @@ describe('associationActionGenerator', function() {
       }
 
       singlizedActions.addTagToChannel('123', modelToAssociate)(d)
-      spy.post.args.should.eql([['host/channel/123/tag', modelToAssociate]])
+      spy.post.args.should.eql([['host/channel/123/tag', modelToAssociate, undefined]]) // undefined because of bearers
       spy.post.callCount.should.equal(1)
     })
 
@@ -119,6 +119,7 @@ describe('associationActionGenerator', function() {
         foo : 'bar'
       }
 
+      // If model is already in associatedModels array
       actions.addTagToChannel('123', modelToAssociate, [modelToAssociate])
       .should.eql({type: 'NO_ACTION'})
       spy.post.callCount.should.equal(0)
