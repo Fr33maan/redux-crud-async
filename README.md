@@ -106,15 +106,15 @@ There is a maximum of **7** actions for a given model.
 eg. primary model = `channel`, associated model = `tag`  
 
 4 primary     ->
-> FIND_CHANNEL   -> GET channels/:id
-> CREATE_CHANNEL -> POST channels
-> UPDATE_CHANNEL -> PUT channels/:id
-> DELETE_CHANNEL -> DELET channels/:id
+> FIND_CHANNEL   -> GET channels/:id  
+> CREATE_CHANNEL -> POST channels  
+> UPDATE_CHANNEL -> PUT channels/:id  
+> DELETE_CHANNEL -> DELET channels/:id  
 
 3 association ->
-> FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?
-> ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)
-> REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId
+> FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?  
+> ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)  
+> REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId  
 
 
 3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
