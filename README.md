@@ -6,6 +6,9 @@ Redux CRUD Async will help you to avoid writing boilerplate code for redundant a
 It currently uses [axios](https://github.com/mzabriskie/axios) for xhr but I plan to also
 implement [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io).  
 
+Currently it allow you to interact with a REST API with or without a JWT Token to authenticate requests.
+In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
+
 # Conventions
 This module is built to work with sails.js blueprints using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api).
 
@@ -28,6 +31,75 @@ findPerson -> will hit `GET /people/:id`
 people - all your "persons"  
 findPeople -> will hit `GET /people`  
 
+**You can unpluralize your urls by setting it in the config**
+
+
+
+##Configuration
+
+####host
+Your API host - must be defined
+
+####prefix (optional)
+A prefix for all your routes. Default to null.
+Don't add the slash `/` on the prefix it will be automatically added.
+
+####pluralizeModels (optional)
+Default to true, use pluralized model names in **url**.
+This has no affect on action names.
+
+person - a single person  
+findPerson -> will hit `GET /people/:id`  
+
+people - all your "persons"  
+findPeople -> will hit `GET /people`
+
+
+**With** `pluralizeModels : false`
+
+person - a single person  
+findPerson -> will hit `GET /person/:id`  
+
+people - all your "persons"  
+findPeople -> will hit `GET /person`
+
+
+####sessionStorageName
+The key for retrieving your JWT Token from `window.sessionStorage`
+
+####apiSpecs
+Routes where you want to use the JWT_Token.
+
+**Token is set in Authorization header as :**
+axios config
+
+```javascript
+{
+    headers : {
+      Authorization : 'Bearer '+ JWT_Token_from_sessionStorage
+    }
+}
+```
+
+You just have to set the **unpluralized** modelName or `primary model + associated models` with an `auth` property inside which contains an array of actions to authenticate.
+Just follow conventions given above.
+
+```javascript
+{
+  apiSpecs : {
+
+    coach : {
+      // All the following actions will be beared with a JWT
+      auth : ['findCoaches', 'createCoach', 'updateCoach']
+    },
+
+    coachComments : {
+      auth : ['addCommentToCoach', 'removeCommentFromCoach']
+    }
+  }
+}
+```
+
 
 ## Action types
 #### Async flow
@@ -47,7 +119,7 @@ eg. primary model = `channel`, associated model = `tag`
 > REMOVE_TAG_FROM_CHANNEL  
 
 
-3 status actions are dispatched for every async action : **START**, **SUCCESS** and **ERROR**    
+3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
 
 
 ## Actions available
@@ -164,7 +236,8 @@ redux-crud-async comes with built in association support
   var hostConfig = {
     host            : 'https://my-api.com',
     prefix          : 'v1', // Optional - default to ''
-    pluralizeModels : false // Optional - default to true
+    pluralizeModels : false, // Optional - default to true
+
   }
 
   var crud = new reduxCrudAsync(hostConfig)
@@ -211,7 +284,6 @@ Reducers return the following states usable in your components
 
 
 # TODO
-- write doc about new feature -> JWT
 - document api expectations and make them editables
 - comment code
 - add single actions
