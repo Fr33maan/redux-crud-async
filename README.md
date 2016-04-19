@@ -24,11 +24,12 @@ coach   -> coaches
 
 By default, all your routes will be pluralized, `Person` model will have the following :
 
-state :  
+**state :**  
 person - a single person  
-findPerson -> will hit `GET /people/:id`  
-
 people - all your "persons"  
+
+**actions :**
+findPerson -> will hit `GET /people/:id`  
 findPeople -> will hit `GET /people`  
 
 **You can unpluralize your urls by setting it in the config**
@@ -48,32 +49,29 @@ Don't add the slash `/` on the prefix it will be automatically added.
 Default to true, use pluralized model names in **url**.
 This has no affect on action names.
 
-person - a single person  
-findPerson -> will hit `GET /people/:id`  
 
-people - all your "persons"  
+findPerson -> will hit `GET /people/:id`  
 findPeople -> will hit `GET /people`
 
 
 **With** `pluralizeModels : false`
 
-person - a single person  
 findPerson -> will hit `GET /person/:id`  
-
-people - all your "persons"  
 findPeople -> will hit `GET /person`
 
 
-####sessionStorageName
+####sessionStorageName (optional)
 The key for retrieving your JWT Token from `window.sessionStorage`
+Default to 'JWT'
 
-####apiSpecs
+####apiSpecs (optional)
 Routes where you want to use the JWT_Token.
+Defaults to none.
 
 **Token is set in Authorization header as :**
-axios config
 
 ```javascript
+// Config sent to axios
 {
     headers : {
       Authorization : 'Bearer '+ JWT_Token_from_sessionStorage
@@ -81,7 +79,7 @@ axios config
 }
 ```
 
-You just have to set the **unpluralized** modelName or `primary model + associated models` with an `auth` property inside which contains an array of actions to authenticate.
+You just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.  
 Just follow conventions given above.
 
 ```javascript
@@ -108,15 +106,15 @@ There is a maximum of **7** actions for a given model.
 eg. primary model = `channel`, associated model = `tag`  
 
 4 primary     ->
-> FIND_CHANNEL  
-> CREATE_CHANNEL  
-> UPDATE_CHANNEL  
-> DELETE_CHANNEL    
+> FIND_CHANNEL   -> GET channels/:id
+> CREATE_CHANNEL -> POST channels
+> UPDATE_CHANNEL -> PUT channels/:id
+> DELETE_CHANNEL -> DELET channels/:id
 
 3 association ->
-> FIND_CHANNEL_TAGS  
-> ADD_TAG_TO_CHANNEL  
-> REMOVE_TAG_FROM_CHANNEL  
+> FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?
+> ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)
+> REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId
 
 
 3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
@@ -278,16 +276,15 @@ Reducers return the following states usable in your components
 
 ```
 
-# Using it in a controller
+# Using it in a container
 
 [Click here to see how much it is easy to use this module in a container](https://github.com/prisonier/redux-crud-async/blob/master/exemples/Container.jsx)
 
 
 # TODO
-- document api expectations and make them editables
+- make api expectations them editables
 - comment code
-- add single actions
+- add single actions (signup, signin)
 - update & delete for model & models
-- overwrite urls for integration with other APIs
 - websocket support for sails
 - normalize ES5 vs ES6 imports
