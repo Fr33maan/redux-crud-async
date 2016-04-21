@@ -17,18 +17,20 @@ module.exports = function(primaryModel, associatedModel) {
   const pluralAssociatedModelNameUp  = pluralize(associatedModel).toUpperCase()
   const pluralAssociatedModelNameCap = capitalize(pluralize(associatedModel))
 
-  const FIND_PRIMARY_ASSOCIATED_MODELS = 'FIND_' + singlePrimaryModelNameUp + '_' + pluralAssociatedModelNameUp
-  const ADD_ASSOCIATED_MODEL_TO_PRIMARY = 'ADD_' + singleAssociatedModelNameUp + '_TO_' + singlePrimaryModelNameUp
+  const FIND_PRIMARY_ASSOCIATED_MODELS       = 'FIND_' + singlePrimaryModelNameUp + '_' + pluralAssociatedModelNameUp
+  const ADD_ASSOCIATED_MODEL_TO_PRIMARY      = 'ADD_' + singleAssociatedModelNameUp + '_TO_' + singlePrimaryModelNameUp
   const REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY = 'REMOVE_' + singleAssociatedModelNameUp + '_FROM_' + singlePrimaryModelNameUp
+  const EMPTY_PRIMARY_ASSOCIATED_MODELS      = 'EMPTY_' + singlePrimaryModelNameUp + '_' + pluralAssociatedModelNameUp
 
   var stateTypes = ['START', 'SUCCESS', 'ERROR']
 
   var A = {}
 
   for (const stateType of stateTypes) {
-    A['FIND_PRIMARY_ASSOCIATED_MODELS' + '_' + stateType] = FIND_PRIMARY_ASSOCIATED_MODELS + '_' + stateType
-    A['ADD_ASSOCIATED_MODEL_TO_PRIMARY' + '_' + stateType] = ADD_ASSOCIATED_MODEL_TO_PRIMARY + '_' + stateType
+    A['FIND_PRIMARY_ASSOCIATED_MODELS' + '_' + stateType]       = FIND_PRIMARY_ASSOCIATED_MODELS + '_' + stateType
+    A['ADD_ASSOCIATED_MODEL_TO_PRIMARY' + '_' + stateType]      = ADD_ASSOCIATED_MODEL_TO_PRIMARY + '_' + stateType
     A['REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY' + '_' + stateType] = REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY + '_' + stateType
+    A['EMPTY_PRIMARY_ASSOCIATED_MODELS']                        = EMPTY_PRIMARY_ASSOCIATED_MODELS
   }
 
 
@@ -115,9 +117,9 @@ module.exports = function(primaryModel, associatedModel) {
           })
 
 
-        // -----------
-        // --- ADD ---
-        // -----------
+        // --------------
+        // --- REMOVE ---
+        // --------------
         case A.REMOVE_ASSOCIATED_MODEL_FROM_PRIMARY_START:
 
           var actionModelTmpId = action[singlePrimaryModelName + singleAssociatedModelNameCap].tmpId
@@ -135,6 +137,9 @@ module.exports = function(primaryModel, associatedModel) {
           return state.map(model => {
             return model.tmpId === action.data.tmpId ? {...model, removing: false} : model
           })
+
+        case A.EMPTY_PRIMARY_ASSOCIATED_MODELS:
+          return []
 
         default:
           return state

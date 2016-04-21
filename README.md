@@ -282,7 +282,8 @@ Reducers return the following states usable in your components
 
 
 # TODO
-- make api expectations them editables
+- better doc "how to use actions"
+- make api expectations editables
 - comment code
 - add single actions (signup, signin)
 - update & delete for model & models

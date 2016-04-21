@@ -253,5 +253,29 @@ describe('associationReducerGenerator -- #channelTags', function() {
       state.should.eql(expectedState)
     })
 
+
+    it('should return an empty array when dispatching EMPTY_CHANNEL_TAGS', () => {
+      var previousState = [{
+        bar: 'foo',
+        tmpId: 123
+      }, {
+        foo: 'bar',
+        tmpId: 456,
+        removing: true
+      }]
+
+      var action = {
+        type  : 'EMPTY_CHANNEL_TAGS'
+      }
+
+      var state = reducer.channelTags(previousState, action)
+
+      var expectedState = []
+
+      state.should.be.an.Array
+      state.length.should.equal(0)
+      state.should.eql(expectedState)
+    })
+
   })
 });
