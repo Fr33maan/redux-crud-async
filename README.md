@@ -102,7 +102,7 @@ Just follow conventions given above.
 ## Action types
 #### Async flow
 
-There is a maximum of **8** actions for a given model.  
+There is a maximum of **9** actions for a given model.  
 eg. primary model = `channel`, associated model = `tag`  
 
 4 primary     ->
@@ -110,6 +110,7 @@ eg. primary model = `channel`, associated model = `tag`
 > CREATE_CHANNEL -> POST channels  
 > UPDATE_CHANNEL -> PUT channels/:id  
 > DELETE_CHANNEL -> DELET channels/:id  
+> EMPTY_CHANNEL  -> will set state.channel = {}
 
 3 association ->
 > FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?  
@@ -282,6 +283,7 @@ Reducers return the following states usable in your components
 
 
 # TODO
+- make this module more database style with holding of previous records
 - better doc "how to use actions"
 - make api expectations editables
 - comment code

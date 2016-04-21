@@ -25,6 +25,8 @@ module.exports = function(modelName) {
     }
   }
 
+  A.EMPTY_MODEL = 'EMPTY_' + singleModelNameUp
+
   return {
 
     // ----------------
@@ -55,6 +57,9 @@ module.exports = function(modelName) {
 
         case A.SINGLE_FIND_SUCCESS:
         return action[singleModelName] || state
+
+        case A.EMPTY_MODEL:
+        return {}
 
         default:
         return state

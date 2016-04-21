@@ -33,4 +33,20 @@ describe('primaryReducerGenerator -- #model', function() {
     state.should.eql(nextState)
   });
 
+
+  it('should return an empty object when EMPTY_MODEL action is dispatched', () => {
+
+    var previousState = {
+      foo: 'bar'
+    }
+
+    var action = {
+      type: 'EMPTY_MODEL'
+    }
+    var state = reducer.model(previousState, action)
+
+    state.should.be.an.Object
+    Object.keys(state).length.should.equal(0)
+  });
+
 });
