@@ -102,7 +102,7 @@ Just follow conventions given above.
 ## Action types
 #### Async flow
 
-There is a maximum of **7** actions for a given model.  
+There is a maximum of **8** actions for a given model.  
 eg. primary model = `channel`, associated model = `tag`  
 
 4 primary     ->
@@ -115,7 +115,7 @@ eg. primary model = `channel`, associated model = `tag`
 > FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?  
 > ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)  
 > REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId  
-
+> EMPTY_CHANNEL_TAGS      -> Sync action that will return an empty array
 
 3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
 
