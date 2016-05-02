@@ -291,3 +291,4 @@ Reducers return the following states usable in your components
 - update & delete for model & models
 - websocket support for sails
 - normalize ES5 vs ES6 imports
+- find a way to test FormData in createModel
