@@ -8,9 +8,6 @@ var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
-var chalk             = require('chalk')
-var redError = msg => console.log(msg)
-
 
 module.exports = function(modelName, hostConfig){
 
@@ -213,7 +210,8 @@ module.exports = function(modelName, hostConfig){
       function success(model) {
         return {
           type              : SINGLE_CREATE_SUCCESS,
-          [singleModelName] : model
+          [singleModelName] : model,
+          message           : singleModelName + ' has been created'
         }
       }
       function error(error, model) {
@@ -231,18 +229,23 @@ module.exports = function(modelName, hostConfig){
           })
         }
 
-        var modelWithTmpId = dispatch(start(model))[singleModelName]
-        var modelToCreate = {}
-        for(let attribute in modelWithTmpId){
-          if(attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute]
-        }
-        try{
-          let bearer = typeof bearers[createModel] !== 'undefined' ? bearers[createModel]() : undefined
-          return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearer)
-            .then(res => dispatch(success(modelWithTmpId)))
-            .catch(res => dispatch(error(res.data, modelWithTmpId)))
-        }catch(e){redError}
+        // Add ability to upload FormData
+        if(typeof FormData !== 'undefined' && model instanceof FormData){
+          var modelToCreate = model
 
+        // If FormData is used, tmpd will not be set and model will not be added to models in reducer
+        }else{
+          var modelWithTmpId = dispatch(start(model))[singleModelName];
+          var modelToCreate = {};
+          for (var attribute in modelWithTmpId) {
+            if (attribute !== 'tmpId') modelToCreate[attribute] = modelWithTmpId[attribute];
+          }
+        }
+
+        let bearer = typeof bearers[createModel] !== 'undefined' ? bearers[createModel]() : undefined
+        return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearer)
+          .then(res => dispatch(success(modelWithTmpId)))
+          .catch(res => dispatch(error(res.data, modelWithTmpId)))
       }
 
     },

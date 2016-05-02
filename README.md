@@ -173,6 +173,7 @@ findUsers(?request) -> request is an additional parameter which will be appened 
 ```
 
 createUser(userToCreate)
+You can submit a FormData to create actions but if you do this, the model will not be happened to state
 
 ```javascript
 

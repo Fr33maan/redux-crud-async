@@ -146,11 +146,12 @@ describe('async actions', () => {
 
       const expectedActions = [
         {
-          type: actionTypes.CHANNEL_CREATE_START,
+          type    : actionTypes.CHANNEL_CREATE_START,
           channel : channelWithTmpId
         },{
-          type: actionTypes.CHANNEL_CREATE_SUCCESS,
-          channel : channelWithTmpId
+          type    : actionTypes.CHANNEL_CREATE_SUCCESS,
+          channel : channelWithTmpId,
+          message : 'channel has been created'
         }
       ]
 
