@@ -225,7 +225,6 @@ module.exports = function(modelName, hostConfig){
       }
 
       return dispatch => {
-        console.log(typeof FormData)
         if((!model || Object.keys(model).length === 0) && (typeof FormData === 'undefined' || (typeof FormData !== 'undefined' && !(model instanceof FormData)))){
           return new Promise((resolve, reject) => {
             resolve(dispatch(error({message : 'no model given for action create' + singleModelNameCap}, undefined)))
