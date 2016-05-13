@@ -10,7 +10,7 @@ var actionModule, singlizedActions
 
 describe('bearers for primaryActionGenerator', function() {
 
-  before('Rewire and spy axios module && host config && getSessionStorage', () => {
+  before('Rewire and spy axios module && host config && getLocalStorage', () => {
     var axios = {
       get : arg => {
         return new Promise(resolve => {resolve({data:{data:[]}}); })
@@ -20,7 +20,7 @@ describe('bearers for primaryActionGenerator', function() {
       }
     }
 
-    var windowAccess = {sessionStorage: {getItem : function(msg){return msg}}}
+    var windowAccess = {localStorage: {getItem : function(msg){return msg}}}
 
     spy.get               = sinon.spy(axios, 'get')
     spy.post              = sinon.spy(axios, 'post')
@@ -29,7 +29,7 @@ describe('bearers for primaryActionGenerator', function() {
 
     const hostConfig = {
       host : 'host',
-      sessionStorageName : 'jwt',
+      localStorageName : 'jwt',
 
       apiSpecs : {
         // Can create actions
@@ -82,7 +82,7 @@ describe('bearers for primaryActionGenerator', function() {
       actionModule.createCoach(coachToCreate)(d)
       spy.post.callCount.should.equal(1)
 
-      // headers should be set && bearer should equal hostConfig.sessionStorageName
+      // headers should be set && bearer should equal hostConfig.localStorageName
       expect(spy.post.args[0][2]).to.eql({headers: {'Authorization': 'Bearer jwt'}})
     })
   })

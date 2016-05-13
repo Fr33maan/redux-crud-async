@@ -35,16 +35,16 @@ module.exports = function(modelName, hostConfig){
 
   var bearers = {}
   var authConfig = path.get(hostConfig, `apiSpecs.${singleModelName}.auth`)
-  var sessionStorageName = path.get(hostConfig, 'sessionStorageName') || 'JWT'
-  var hasSessionStorage = path.get(windowAccess, 'sessionStorage.getItem');
+  var localStorageName = path.get(hostConfig, 'localStorageName') || 'JWT'
+  var hasLocalStorage = path.get(windowAccess, 'localStorage.getItem');
 
-  if(authConfig && hasSessionStorage){
+  if(authConfig && hasLocalStorage){
 
     authConfig.forEach(action => {
 
         // Return a function to get the token each time the action is dispatched
         bearers[action] = function() {
-          let JWT_Token = windowAccess.sessionStorage.getItem(sessionStorageName)
+          let JWT_Token = windowAccess.localStorage.getItem(localStorageName)
 
           return {
             headers : {'Authorization': `Bearer ${JWT_Token}`}

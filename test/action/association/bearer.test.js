@@ -10,7 +10,7 @@ var actionModule
 
 describe('bearers for associationActionGenerator', function() {
 
-  before('Rewire and spy axios module && host config && getSessionStorage', () => {
+  before('Rewire and spy axios module && host config && getLocalStorage', () => {
 
     var axios = {
       get : arg => {
@@ -37,7 +37,7 @@ describe('bearers for associationActionGenerator', function() {
       }
     }
 
-    var windowAccess = {sessionStorage: {getItem : function(msg){return msg}}}
+    var windowAccess = {localStorage: {getItem : function(msg){return msg}}}
     associationActionGenerator.__set__({axios, windowAccess})
 
     actionModule = associationActionGenerator('coach', 'comment', hostConfig)
@@ -65,7 +65,7 @@ describe('bearers for associationActionGenerator', function() {
 
       actionModule.addCommentToCoach(123, commentToAssociate)(d)
 
-      // headers should be set && bearer should equal default sessionStorageName
+      // headers should be set && bearer should equal default localStorageName
       expect(spy.post.args[0][2]).to.eql({headers: {'Authorization': 'Bearer JWT'}})
     })
 
@@ -80,7 +80,7 @@ describe('bearers for associationActionGenerator', function() {
 
       actionModule.removeCommentFromCoach(123, commentToDissociate)(d)
 
-      // headers should be set && bearer should equal hostConfig.sessionStorageName
+      // headers should be set && bearer should equal hostConfig.localStorageName
       expect(spy.delete.args[0][1]).to.eql({headers: {'Authorization': 'Bearer JWT'}})
     })
   })

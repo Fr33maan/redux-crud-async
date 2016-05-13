@@ -60,8 +60,8 @@ findPerson -> will hit `GET /person/:id`
 findPeople -> will hit `GET /person`
 
 
-####sessionStorageName (optional)
-The key for retrieving your JWT Token from `window.sessionStorage`
+####localStorageName (optional)
+The key for retrieving your JWT Token from `window.localStorage`
 Default to 'JWT'
 
 ####apiSpecs (optional)
@@ -74,7 +74,7 @@ Defaults to none.
 // Config sent to axios
 {
     headers : {
-      Authorization : 'Bearer '+ JWT_Token_from_sessionStorage
+      Authorization : 'Bearer '+ JWT_Token_from_localStorage
     }
 }
 ```
