@@ -3,28 +3,33 @@
 
 Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
 
-It currently uses [axios](https://github.com/mzabriskie/axios) for xhr but I plan to also
-implement [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io).  
-
-Currently it allow you to interact with a REST API with or without a JWT Token to authenticate requests.
+It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
+It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
 
-# Table of Contents
-1. [Conventions](#conventions)
+
+## Table of Contents
+1. [Conventions](#conventions)  
+    a. [Routes](#routes)  
+    b. [Authentication](#authentication)  
 2. [Configuration](#configuration)
-3. [Action types](#action-types)
-4. [Actions available](#actions-available)
-5. [States (Reducers)](#states-(reducers))
-6. [Exemple](#exemple)
-7. [Todo](#todo)
+3. [Action](#action)  
+    a. [Names](#names)  
+    b. [Structure](#structure)  
+    c. [Associations](#associations)  
+4. [States (Reducers)](#states-(reducers))
+5. [Exemple](#exemple)
+6. [Todo](#todo)
+
+
 
 ## Conventions
-This module is built to work with sails.js blueprints using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api).
 
-It differentiate singular and plural model name : findUser !== findUsers
-
+#### Routes
+This module is built to work with sails.js blueprints routes using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api/wiki/Sub-Generators#blueprints).  
+It differentiate singular and plural model name : findUser !== findUsers  
 **IMPORTANT !**
-As sails.js, this module uses [pluralize module](https://www.npmjs.com/package/pluralize) which pluralize words for real.
+As sails.js, this module uses [pluralize module](https://www.npmjs.com/package/pluralize) which pluralize words grammaticaly.  
 
 some exemples :   
 channel -> channels  
@@ -45,57 +50,13 @@ findPeople -> will hit `GET /people`
 
 
 
-##Configuration
-
-
-| Name  | Type  | Default | description |
-|:---         |:---      |:---      |:---         |
-| host | `String` | null | Your API host - must be defined |
-| prefix | `String` | null | A prefix for all your routes. Don't add the slash `/` on the prefix it will be automatically added.|
-| pluralizeModels | `Boolean` | true |  Use pluralized model names in **url**. This has no affect on action names. |
-| socket | `Boolean` | false | Use socket.io for actions |
-
-```javascript
-{
-  host            : 'http://your-api-host',
-  prefix          : 'my-prefix',
-  pluralizeModels : false,
-  socket          : true
-}
-```
-
-
-
-####prefix (optional)
-
-
-####pluralizeModels (optional)
-
-
-
-
-findPerson -> will hit `GET /people/:id`  
-findPeople -> will hit `GET /people`
-
-
-**With** `pluralizeModels : false`
-
-findPerson -> will hit `GET /person/:id`  
-findPeople -> will hit `GET /person`
-
-
-####localStorageName (optional)
-The key for retrieving your JWT Token from `window.localStorage`
-Default to 'JWT'
-
-####apiSpecs (optional)
-Routes where you want to use the JWT_Token.
-Defaults to none.
+#### Authentication
+`redux-crud-async` uses a Bearer Token to authenticate requests. It is store in `window.localStorage`.  
+Every request which need authentication is sent with the token in the header following this convention :  
 
 **Token is set in Authorization header as :**
-
 ```javascript
-// Config sent to axios
+// Config sent to axios or socket.io
 {
     headers : {
       Authorization : 'Bearer '+ JWT_Token_from_localStorage
@@ -103,11 +64,33 @@ Defaults to none.
 }
 ```
 
-You just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.  
+
+
+##Configuration
+
+#### Config file
+
+| Name  | Type  | Default | description |
+|:---         |:---      |:---      |:---         |
+| host | `String` | null | Your API host - must be defined |
+| prefix | `String` | null | A prefix for all your routes. Don't add the slash `/` on the prefix it will be automatically added.|
+| pluralizeModels | `Boolean` | true |  Use pluralized model names in **url**. This has no affect on action names. |
+| socket | `Boolean` | false | Use socket.io for actions |
+| localStorageName | `String` | "JWT" | The key for retrieving your JWT Token from `window.localStorage` |
+| apiSpecs | `Object` | null | Routes where you want to use the JWT_Token |
+
+
+**For apiSpecs** you just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.  
 Just follow conventions given above.
+
 
 ```javascript
 {
+  host            : 'http://your-api-host',
+  prefix          : 'my-prefix',
+  pluralizeModels : false,
+  socket          : true,
+  localStorageName: 'CustomStorage',
   apiSpecs : {
 
     coach : {
@@ -122,31 +105,42 @@ Just follow conventions given above.
 }
 ```
 
+#### Results
+findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`  
+findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 
-## Action types
-#### Async flow
+
+**With** `pluralizeModels : false`
+
+findPerson -> will hit `GET http://your-api-host/my-prefix/people/:id`  
+findPeople -> will hit `GET http://your-api-host/my-prefix/people`
+
+
+
+
+## Actions
+#### Names
 
 There is a maximum of **9** actions for a given model.  
 eg. primary model = `channel`, associated model = `tag`  
 
-4 primary     ->
+5 primary     ->
 > FIND_CHANNEL   -> GET channels/:id  
 > CREATE_CHANNEL -> POST channels  
 > UPDATE_CHANNEL -> PUT channels/:id  
 > DELETE_CHANNEL -> DELET channels/:id  
-> EMPTY_CHANNEL  -> will set state.channel = {}
+> EMPTY_CHANNEL  -> Synchronous action that will set state.channel = {}
 
-3 association ->
+4 association ->
 > FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?  
 > ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)  
 > REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId  
-> EMPTY_CHANNEL_TAGS      -> Sync action that will return an empty array
+> EMPTY_CHANNEL_TAGS      -> Synchronous action that will return an empty array
 
 3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
 
 
-## Actions available
-#### Primary
+#### Structure
 findUser(userId) will dispatch following actions :
 
 ```javascript
@@ -308,13 +302,14 @@ Reducers return the following states usable in your components
 
 
 ## TODO
-- make this module more database style with holding of previous records
-- update path to repo for travis CLI
-- better doc "how to use actions"
-- make api expectations editables
-- comment code
-- add single actions (signup, signin)
-- update & delete for model & models
+- better documentation on how uuid is used
+- clearer doc for `EMPTY` actions
 - websocket support for sails
-- normalize ES5 vs ES6 imports
+- better doc "how to use actions"
+- comment code
 - find a way to test FormData in createModel
+- update & delete for model & models
+- make this module more "database style" with holding of previous records
+- normalize ES5 vs ES6 imports
+- add single actions (signup, signin)
+- make api expectations editables
