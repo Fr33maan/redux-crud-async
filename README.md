@@ -18,7 +18,7 @@ In a near future, I will implement the possibility to create random actions like
 6. [Exemple](#exemple)
 7. [Todo](#todo)
 
-# Conventions
+## Conventions
 This module is built to work with sails.js blueprints using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api).
 
 It differentiate singular and plural model name : findUser !== findUsers
@@ -47,16 +47,31 @@ findPeople -> will hit `GET /people`
 
 ##Configuration
 
-####host
-Your API host - must be defined
+
+| Name  | Type  | Default | description |
+|:---         |:---      |:---      |:---         |
+| host | `String` | null | Your API host - must be defined |
+| prefix | `String` | null | A prefix for all your routes. Don't add the slash `/` on the prefix it will be automatically added.|
+| pluralizeModels | `Boolean` | true |  Use pluralized model names in **url**. This has no affect on action names. |
+| socket | `Boolean` | false | Use socket.io for actions |
+
+```javascript
+{
+  host            : 'http://your-api-host',
+  prefix          : 'my-prefix',
+  pluralizeModels : false,
+  socket          : true
+}
+```
+
+
 
 ####prefix (optional)
-A prefix for all your routes. Default to null.
-Don't add the slash `/` on the prefix it will be automatically added.
+
 
 ####pluralizeModels (optional)
-Default to true, use pluralized model names in **url**.
-This has no affect on action names.
+
+
 
 
 findPerson -> will hit `GET /people/:id`  
