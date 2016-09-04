@@ -13,7 +13,10 @@ In a near future, I will implement the possibility to create random actions like
 1. [Conventions](#conventions)
 2. [Configuration](#configuration)
 3. [Action types](#action-types)
-
+4. [Actions available](#actions-available)
+5. [States (Reducers)](#states-(reducers))
+6. [Exemple](#exemple)
+7. [Todo](#todo)
 
 # Conventions
 This module is built to work with sails.js blueprints using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api).
@@ -284,12 +287,12 @@ Reducers return the following states usable in your components
 
 ```
 
-# Using it in a container
+## Exemple
 
 [Click here to see how much it is easy to use this module in a container](https://github.com/prisonier/redux-crud-async/blob/master/exemples/Container.jsx)
 
 
-# TODO
+## TODO
 - make this module more database style with holding of previous records
 - update path to repo for travis CLI
 - better doc "how to use actions"
