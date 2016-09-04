@@ -12,7 +12,7 @@ In a near future, I will implement the possibility to create random actions like
 # Table of Contents
 1. [Conventions](#conventions)
 2. [Configuration](#configuration)
-3. [Action types](#action_types)
+3. [Action types](#action-types)
 
 
 # Conventions
