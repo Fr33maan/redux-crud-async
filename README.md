@@ -1,5 +1,5 @@
 # Redux CRUD Async
-[![Build Status](https://travis-ci.org/prisonier/redux-crud-async.svg?branch=master)](https://travis-ci.org/prisonier/redux-crud-async)
+[![Build Status](https://travis-ci.org/l1br3/redux-crud-async.svg?branch=master)](https://travis-ci.org/l1br3/redux-crud-async)
 
 Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
 
@@ -8,6 +8,12 @@ implement [sails.io](https://github.com/balderdashy/sails.io.js) websocket (cust
 
 Currently it allow you to interact with a REST API with or without a JWT Token to authenticate requests.
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
+
+# Table of Contents
+1. [Conventions](#conventions)
+2. [Configuration](#configuration)
+3. [Action types](#action types)
+
 
 # Conventions
 This module is built to work with sails.js blueprints using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api).
@@ -285,6 +291,7 @@ Reducers return the following states usable in your components
 
 # TODO
 - make this module more database style with holding of previous records
+- update path to repo for travis CLI
 - better doc "how to use actions"
 - make api expectations editables
 - comment code
