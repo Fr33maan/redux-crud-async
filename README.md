@@ -3,7 +3,7 @@
 
 Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
 
-It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
+It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR. It should work with socket.io but I havn't tested.  
 It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
 
@@ -13,7 +13,7 @@ In a near future, I will implement the possibility to create random actions like
     a. [Routes](#routes)  
     b. [Authentication](#authentication)  
 2. [Configuration](#configuration)
-3. [Action](#action)  
+3. [Actions](#actions)  
     a. [Names](#names)  
     b. [Structure](#structure)  
     c. [Associations](#associations)  
@@ -160,13 +160,13 @@ findUser(userId) will dispatch following actions :
     FIND_CHANNEL_ERROR : {
       type  : 'FIND_CHANNEL_ERROR',
       data  : channelId,
-      error : error // error return by server
+      error : error // error returned by server or thrown during the actions flow
     }
 
   }
 ```
 
-findUsers(?request) -> request is an additional parameter which will be appened to the url
+findUsers(?request) -> request is an additional parameter which will be appened to the url following sails conventions  
 
 ```javascript
 
@@ -184,13 +184,13 @@ findUsers(?request) -> request is an additional parameter which will be appened 
 
     FIND_CHANNELS_ERROR : {
       type  : 'FIND_CHANNELS_ERROR',
-      error : error // error return by server
+      error : error // error returned by server or thrown during the actions flow
     }
 
   }
 ```
 
-createUser(userToCreate)
+createUser(userToCreate)  
 You can submit a FormData to create actions but if you do this, the model will not be happened to state
 
 ```javascript
@@ -225,13 +225,13 @@ You can submit a FormData to create actions but if you do this, the model will n
 - deleteUsers
 
 #### Associations
-redux-crud-async comes with built in association support
+redux-crud-async comes with built in association support  
 
 - findUserPets(userId, petId?)
 - addPetToUser(userId, petToCreate, userPets?)
 - removePetFromUser(userId, petToRemove)
 
-**Use it like this**
+**Usage**
 
 ```javascript
 // redux/actionTypes/index.js
@@ -302,6 +302,7 @@ Reducers return the following states usable in your components
 
 
 ## TODO
+- better documentation for `the model will not be happened to state`
 - better documentation on how uuid is used
 - clearer doc for `EMPTY` actions
 - websocket support for sails

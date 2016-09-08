@@ -4,25 +4,19 @@ var sinon = require('sinon')
 var should = require('chai').should()
 
 var actions = primaryActionGenerator
-var get
+var provider
 
 describe('primaryActionGenerator', function() {
 
-  before('Rewire primaryActionGenerator axios module and host config', () => {
-    var axios = {
-      get : modelId => {
-        return new Promise(resolve => {resolve({data:{data:[]}})})
-      }
+  before('Rewire primaryActionGenerator providerUtil module and host config', () => {
+    var providerUtil = function(hostConfig, method, url){
+      console.log('called')
+      return new Promise(resolve => {resolve()})
     }
 
-    get  = sinon.spy(axios, 'get')
+    provider = sinon.spy(providerUtil)
 
-    const hostConfig = {
-      host : 'host'
-    }
-
-    primaryActionGenerator.__set__({axios})
-
+    primaryActionGenerator.__set__({providerUtil})
   })
 
   it('should call the prefixed url', () => {
@@ -33,7 +27,8 @@ describe('primaryActionGenerator', function() {
     actions('channel', hostConfig)
     .findChannel('123')(() => {})
 
-    get.calledWith('host/channels/123').should.be.true
+    console.log(provider.args)
+    provider.calledWith('host/channels/123').should.be.true
   })
 
 
@@ -45,7 +40,7 @@ describe('primaryActionGenerator', function() {
 
     actions('channel', hostConfig)
     .findChannel('123')(() => {})
-    get.calledWith('host/prefix/channels/123').should.be.true
+    provider.calledWith('host/prefix/channels/123').should.be.true
 
   })
 });

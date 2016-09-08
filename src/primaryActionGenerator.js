@@ -8,6 +8,8 @@ var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
+var bearerUtil   = require('../utils/xhr/bearer')
+var providerUtil = require('../utils/xhr/provider')
 
 module.exports = function(modelName, hostConfig){
 
@@ -32,26 +34,6 @@ module.exports = function(modelName, hostConfig){
   const baseUrl      = host + (prefix ? '/' + prefix : '')
   const pluralizeUrl = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
   const urlModel     = pluralizeUrl ? pluralModelName : singleModelName
-
-  var bearers = {}
-  var authConfig = path.get(hostConfig, `apiSpecs.${singleModelName}.auth`)
-  var localStorageName = path.get(hostConfig, 'localStorageName') || 'JWT'
-  var hasLocalStorage = path.get(windowAccess, 'localStorage.getItem');
-
-  if(authConfig && hasLocalStorage){
-
-    authConfig.forEach(action => {
-
-        // Return a function to get the token each time the action is dispatched
-        bearers[action] = function() {
-          let JWT_Token = windowAccess.localStorage.getItem(localStorageName)
-
-          return {
-            headers : {'Authorization': `Bearer ${JWT_Token}`}
-          }
-        }
-    })
-  }
 
   const findModel   = 'find' + singleModelNameCap
   const findModels  = 'find' + pluralModelNameCap
@@ -113,6 +95,8 @@ module.exports = function(modelName, hostConfig){
   const PLURAL_DESTROY_SUCCESS = pluralModelNameUp + '_DESTROY_SUCCESS'
   const PLURAL_DESTROY_ERROR   = pluralModelNameUp + '_DESTROY_ERROR'
 
+  const headers = bearerUtil(windowAccess, hostConfig, singleModelName)
+
   return {
 
     // -------------------
@@ -146,11 +130,18 @@ module.exports = function(modelName, hostConfig){
         }
 
         dispatch(start())
+        
+        return providerUtil(
+          hostConfig,
+          'get',
+          `${baseUrl}/${urlModel}/${modelId}`,
+          headers[findModel]
+        )
 
         // If a rule exists we execute the function to get the token dynamically
-        let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
-
-        return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearer)
+        // let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
+        //
+        // return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearer)
           .then(res => dispatch(success(res.data.data)))
           .catch(res => dispatch(error(res.data, modelId)))
       }

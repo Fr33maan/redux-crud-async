@@ -22,8 +22,8 @@ describe('bearers for primaryActionGenerator', function() {
 
     var windowAccess = {localStorage: {getItem : function(msg){return msg}}}
 
-    spy.get               = sinon.spy(axios, 'get')
-    spy.post              = sinon.spy(axios, 'post')
+    spy.get  = sinon.spy(axios, 'get')
+    spy.post = sinon.spy(axios, 'post')
 
     primaryActionGenerator.__set__({axios, windowAccess})
 

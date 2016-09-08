@@ -1,7 +1,7 @@
 {
   "name": "redux-crud-async",
   "version": "0.3.0",
-  "description": "async crud boilerplate for actions and reducers",
+  "description": "crud async actions for redux",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -14,23 +14,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/prisonier/redux-crud-async.git"
+    "url": "https://github.com/l1br3/redux-crud-async.git"
   },
   "keywords": [
+    "react",
     "redux",
     "crud",
     "async",
-    "boilerplate",
-    "sails",
-    "redux-crud",
-    "JWT"
+    "xhr",
+    "socket",
+    "auth"
   ],
-  "author": "prisonier",
+  "author": "l1br3",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/prisonier/redux-crud-async/issues"
+    "url": "https://github.com/l1br3/redux-crud-async/issues"
   },
-  "homepage": "https://github.com/prisonier/redux-crud-async#readme",
+  "homepage": "https://github.com/l1br3/redux-crud-async#readme",
   "devDependencies": {
     "babel-cli": "^6.7.5",
     "babel-core": "^6.7.6",

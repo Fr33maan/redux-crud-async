@@ -1,3 +1,4 @@
+./test/**/*.test.js
 --reporter dot
 --ui bdd
 --recursive
