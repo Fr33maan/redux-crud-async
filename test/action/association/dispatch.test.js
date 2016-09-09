@@ -25,6 +25,18 @@ describe('async actions', () => {
   })
 
 
+  //  http://www.kammerl.de/ascii/AsciiSignature.php
+  //  nancyj-underlined
+
+  //   88888888b dP 888888ba  888888ba
+  //   88        88 88    `8b 88    `8b
+  //  a88aaaa    88 88     88 88     88
+  //   88        88 88     88 88     88
+  //   88        88 88     88 88    .8P
+  //   dP        dP dP     dP 8888888P
+  //  oooooooooooooooooooooooooooooooooo
+
+
   describe('#findChannelTag', () => {
 
     it('should dispatch FIND_CHANNEL_TAGS_START and FIND_CHANNEL_TAGS_SUCCESS when findChannelTags action is dispatched', (done) => {
@@ -65,6 +77,18 @@ describe('async actions', () => {
       .catch(done)
     })
   })
+
+
+  //  http://www.kammerl.de/ascii/AsciiSignature.php
+  //  nancyj-underlined
+
+  //   .d888888  888888ba  888888ba
+  //  d8'    88  88    `8b 88    `8b
+  //  88aaaaa88a 88     88 88     88
+  //  88     88  88     88 88     88
+  //  88     88  88    .8P 88    .8P
+  //  88     88  8888888P  8888888P
+  //  ooooooooooooooooooooooooooooooo
 
 
   describe('#addTagToChannel', () => {
@@ -136,8 +160,40 @@ describe('async actions', () => {
   })
 
 
+  //  http://www.kammerl.de/ascii/AsciiSignature.php
+  //  nancyj-underlined
+
+  //   888888ba   88888888b 8888ba.88ba   .88888.  dP     dP  88888888b
+  //   88    `8b  88        88  `8b  `8b d8'   `8b 88     88  88
+  //  a88aaaa8P' a88aaaa    88   88   88 88     88 88    .8P a88aaaa
+  //   88   `8b.  88        88   88   88 88     88 88    d8'  88
+  //   88     88  88        88   88   88 Y8.   .8P 88  .d8P   88
+  //   dP     dP  88888888P dP   dP   dP  `8888P'  888888'    88888888P
+  //  oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
 
     describe('#removeTagFromChannel', () => {
+
+
+      it('should dispatch REMOVE_TAG_FROM_CHANNEL_START and REMOVE_TAG_FROM_CHANNEL_ERROR when modelToDissociate.id is undefined', (done) => {
+
+        const tagToDissociate = {foo: 'bar', tmpId: 'uuid'}
+        const expectedError = 'no id provided in modelToDissociate : tags'
+
+        const expectedActions = [
+          { type: actionTypes.REMOVE_TAG_FROM_CHANNEL_START, channelTag : tagToDissociate },
+          { type: actionTypes.REMOVE_TAG_FROM_CHANNEL_ERROR, data: tagToDissociate, error: expectedError}
+        ]
+        const store = mockStore({ channelTag: {} })
+
+        store.dispatch(actions.removeTagFromChannel('123', tagToDissociate))
+        .then(() => { // return of async actions
+          store.getActions().should.eql(expectedActions)
+        })
+        .then(done)
+        .catch(done)
+      })
+
 
       it('should dispatch REMOVE_TAG_FROM_CHANNEL_START and REMOVE_TAG_FROM_CHANNEL_SUCCESS when removeTagFromChannel action is dispatched', (done) => {
         nock('http://test.com')

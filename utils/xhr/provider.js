@@ -3,7 +3,6 @@ const io = typeof io !== 'undefined' ? io : null
 
 
 module.exports = function providerUtil(hostConfig, method, url, headers, postData){
-
   const shouldUseSocket = hostConfig.socket
 
   if(shouldUseSocket){
@@ -44,8 +43,8 @@ module.exports = function providerUtil(hostConfig, method, url, headers, postDat
 
   }else{
 
-    if(method === 'get'){
-      return axios.get(url, headers)
+    if(method === 'get' || method === 'delete'){
+      return axios[method](url, headers)
 
     }else if(method === 'post'){
 

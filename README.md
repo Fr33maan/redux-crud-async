@@ -6,7 +6,7 @@ Redux CRUD Async will help you to avoid writing boilerplate code for redundant a
 It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR. It should work with socket.io but I havn't tested.  
 It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
-
+Redux-crud-async is built against 125+ tests  
 
 ## Table of Contents
 1. [Conventions](#conventions)  
@@ -20,6 +20,7 @@ In a near future, I will implement the possibility to create random actions like
 4. [States (Reducers)](#states-(reducers))
 5. [Exemple](#exemple)
 6. [Todo](#todo)
+7. [Change Log](#change-log)
 
 
 
@@ -64,21 +65,30 @@ Every request which need authentication is sent with the token in the header fol
 }
 ```
 
-
+---
 
 ##Configuration
 
 #### Config file
 
-| Name  | Type  | Default | description |
+| Name  | Type  | Default | Description |
 |:---         |:---      |:---      |:---         |
 | host | `String` | null | Your API host - must be defined |
 | prefix | `String` | null | A prefix for all your routes. Don't add the slash `/` on the prefix it will be automatically added.|
 | pluralizeModels | `Boolean` | true |  Use pluralized model names in **url**. This has no affect on action names. |
 | socket | `Boolean` | false | Use socket.io for actions |
 | localStorageName | `String` | "JWT" | The key for retrieving your JWT Token from `window.localStorage` |
+| headerContent | `String` | "Bearer {{JWT}}" | The format of your header content **The format is affected by `localStorageName`** |
+| headerFormat | `String` | "Authorization" | The format of your header authorization key |
 | apiSpecs | `Object` | null | Routes where you want to use the JWT_Token |
 
+**The format of headerContent is affected by `localStorageName` if you change the default value**
+```javascript
+{
+  localStorageName : 'myJWT',
+  headerContent : 'MyContent {{myJWT}}'
+}
+```
 
 **For apiSpecs** you just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.  
 Just follow conventions given above.
@@ -90,7 +100,7 @@ Just follow conventions given above.
   prefix          : 'my-prefix',
   pluralizeModels : false,
   socket          : true,
-  localStorageName: 'CustomStorage',
+  localStorageName: 'MyJWT',
   apiSpecs : {
 
     coach : {
@@ -106,17 +116,15 @@ Just follow conventions given above.
 ```
 
 #### Results
-findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`  
-findPeople -> will hit `GET http://your-api-host/my-prefix/person`
-
-
-**With** `pluralizeModels : false`
-
 findPerson -> will hit `GET http://your-api-host/my-prefix/people/:id`  
 findPeople -> will hit `GET http://your-api-host/my-prefix/people`
 
 
+**With** `pluralizeModels : false`
+findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`  
+findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 
+---
 
 ## Actions
 #### Names
@@ -191,7 +199,8 @@ findUsers(?request) -> request is an additional parameter which will be appened 
 ```
 
 createUser(userToCreate)  
-You can submit a FormData to create actions but if you do this, the model will not be happened to state
+You can submit a FormData to `create` but the FormData is transmitted as is and model will not be appended to the state.
+If you need the model to be appended to the state, use a javascript object instead of a FormData.   
 
 ```javascript
 
@@ -268,7 +277,7 @@ redux-crud-async comes with built in association support
   }
 
 ```
-
+---
 
 ## States (Reducers)
 Reducers return the following states usable in your components
@@ -295,14 +304,14 @@ Reducers return the following states usable in your components
   }
 
 ```
-
+---
 ## Exemple
 
-[Click here to see how much it is easy to use this module in a container](https://github.com/prisonier/redux-crud-async/blob/master/exemples/Container.jsx)
-
+[Click here to see how much it is easy to use this module in a container](https://github.com/l1br3/redux-crud-async/blob/master/exemples/Container.jsx)
+---
 
 ## TODO
-- better documentation for `the model will not be happened to state`
+- better documentation for `the model will not be appended to state`
 - better documentation on how uuid is used
 - clearer doc for `EMPTY` actions
 - websocket support for sails
@@ -311,6 +320,15 @@ Reducers return the following states usable in your components
 - find a way to test FormData in createModel
 - update & delete for model & models
 - make this module more "database style" with holding of previous records
-- normalize ES5 vs ES6 imports
+- normalize ES5 vs ES6 imports -> can't because of rewire
 - add single actions (signup, signin)
 - make api expectations editables
+- remove arrow functions in tests
+- make a module from utils/xhr
+
+## Change Log
+####0.4.0
+- add socket.io support through the window.io variable
+- more tests
+- rewrite of the utils/xhr/* module
+- doc changes

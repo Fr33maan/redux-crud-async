@@ -5,10 +5,10 @@ var checkModelName  = require('../utils/checkModelName')
 var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
 var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
-var windowAccess    = typeof window !== 'undefined' ? window : {}
+var windowAccess    = typeof window !== 'undefined' ? window : {} // Make it available in tests
 var now = Date.now
 
-var bearerUtil   = require('../utils/xhr/bearer')
+var headersUtil  = require('../utils/xhr/headers')
 var providerUtil = require('../utils/xhr/provider')
 
 module.exports = function(modelName, hostConfig){
@@ -24,6 +24,10 @@ module.exports = function(modelName, hostConfig){
   const pluralModelName    = pluralize(modelName)
   const pluralModelNameUp  = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
+
+  // Create headers for each action - depends on hostConfig
+  // See utils/headers
+  const headers = headersUtil(hostConfig, singleModelName)
 
 
   // ---------------
@@ -95,9 +99,19 @@ module.exports = function(modelName, hostConfig){
   const PLURAL_DESTROY_SUCCESS = pluralModelNameUp + '_DESTROY_SUCCESS'
   const PLURAL_DESTROY_ERROR   = pluralModelNameUp + '_DESTROY_ERROR'
 
-  const headers = bearerUtil(windowAccess, hostConfig, singleModelName)
+
 
   return {
+  //  http://www.kammerl.de/ascii/AsciiSignature.php
+  //  nancyj-underlined
+
+  //   88888888b dP 888888ba  888888ba
+  //   88        88 88    `8b 88    `8b
+  //  a88aaaa    88 88     88 88     88
+  //   88        88 88     88 88     88
+  //   88        88 88     88 88    .8P
+  //   dP        dP dP     dP 8888888P
+  //  oooooooooooooooooooooooooooooooooo
 
     // -------------------
     // FIND SINGLE MODEL
@@ -130,14 +144,13 @@ module.exports = function(modelName, hostConfig){
         }
 
         dispatch(start())
-        
+
         return providerUtil(
           hostConfig,
           'get',
           `${baseUrl}/${urlModel}/${modelId}`,
           headers[findModel]
         )
-
         // If a rule exists we execute the function to get the token dynamically
         // let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
         //
@@ -175,14 +188,29 @@ module.exports = function(modelName, hostConfig){
       return dispatch => {
         dispatch(start())
 
-        let bearer = typeof bearers[findModels] !== 'undefined' ? bearers[findModels]() : undefined
+        return providerUtil(
+          hostConfig,
+          'get',
+          `${baseUrl}/${urlModel}${request}`,
+          headers[findModels]
+        )
 
-        return axios.get(`${baseUrl}/${urlModel}${request}`, bearer)
-          .then(res => dispatch(success(res.data.data)))
-          .catch(res =>dispatch(error(res.data)))
+        .then(res => dispatch(success(res.data.data)))
+        .catch(res =>dispatch(error(res.data)))
       }
 
     },
+
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+  //   a88888b.  888888ba   88888888b  .d888888  d888888P  88888888b
+  //  d8'   `88  88    `8b  88        d8'    88     88     88
+  //  88        a88aaaa8P' a88aaaa    88aaaaa88a    88    a88aaaa
+  //  88         88   `8b.  88        88     88     88     88
+  //  Y8.   .88  88     88  88        88     88     88     88
+  //   Y88888P'  dP     dP  88888888P 88     88     dP     88888888P
+  //  ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
 
     // -------------------
@@ -214,6 +242,7 @@ module.exports = function(modelName, hostConfig){
       }
 
       return dispatch => {
+        // Check if the object passed to create has properties or is a FormData Object
         if((!model || Object.keys(model).length === 0) && (typeof FormData === 'undefined' || (typeof FormData !== 'undefined' && !(model instanceof FormData)))){
           return new Promise((resolve, reject) => {
             resolve(dispatch(error({message : 'no model given for action create' + singleModelNameCap}, undefined)))
@@ -224,7 +253,7 @@ module.exports = function(modelName, hostConfig){
         if(typeof FormData !== 'undefined' && model instanceof FormData){
           var modelToCreate = model
 
-        // If FormData is used, tmpd will not be set and model will not be added to models in reducer
+        // If FormData is used, tmpId will not be set and model will not be added to models in reducer
         }else{
           var modelWithTmpId = dispatch(start(model))[singleModelName];
           var modelToCreate = {};
@@ -233,10 +262,15 @@ module.exports = function(modelName, hostConfig){
           }
         }
 
-        let bearer = typeof bearers[createModel] !== 'undefined' ? bearers[createModel]() : undefined
-        return axios.post(`${baseUrl}/${urlModel}`,modelToCreate, bearer)
-          .then(res => dispatch(success(modelWithTmpId)))
-          .catch(res => dispatch(error(res.data, modelWithTmpId)))
+        return providerUtil(
+          hostConfig,
+          'post',
+          `${baseUrl}/${urlModel}`,
+          headers[createModel],
+          modelToCreate
+        )
+        .then(res => dispatch(success(modelWithTmpId)))
+        .catch(res => dispatch(error(res.data, modelWithTmpId)))
       }
 
     },

@@ -5,10 +5,10 @@ var rewire        = require('rewire')
 var nock          = require('nock')
 var should        = require('chai').should()
 
-var actionModule  = rewire('../../../src/primaryActionGenerator')
+var primaryActionGenerator  = rewire('../../../src/primaryActionGenerator')
 var actionTypes   = require('../../../src/primaryActionTypeGenerator')('channel')
 
-var actions       = actionModule
+var actions       = primaryActionGenerator
 const middlewares = [ thunk ]
 const mockStore   = configureMockStore(middlewares)
 
@@ -18,8 +18,8 @@ describe('async actions', () => {
   })
 
   before('rewire host with test values', () => {
-    actionModule.__set__({now : () => 123})
-    actionModule.__set__({'uuid.v4' : () => 'uuid'})
+    primaryActionGenerator.__set__({now : () => 123})
+    primaryActionGenerator.__set__({'uuid.v4' : () => 'uuid'})
 
     actions = actions('channel', {host : 'http://test.com'})
   })

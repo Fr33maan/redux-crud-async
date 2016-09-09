@@ -8,6 +8,8 @@ var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
 var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
+var headersUtil  = require('../utils/xhr/headers')
+var providerUtil = require('../utils/xhr/provider')
 
 module.exports= function(primaryModel, associatedModel, hostConfig) {
 
@@ -15,7 +17,6 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
 
   checkModelName(primaryModel)
   checkModelName(associatedModel)
-
 
   const primaryModelName             = primaryModel
   const primaryModelNameCap          = capitalize(primaryModel)
@@ -37,25 +38,13 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   const urlPrimaryModel    = pluralizeUrl ? pluralPrimaryModelName    : primaryModelName
   const urlAssociatedModel = pluralizeUrl ? pluralAssociatedModelName : singleAssociatedModelName
 
+  // -------------
+  // -- HEADERS --
+  // -------------
 
-  var bearers = {}
-  var authConfig = path.get(hostConfig, `apiSpecs.${primaryModelName}${pluralAssociatedModelNameCap}.auth`)
-  var localStorageName = path.get(hostConfig, 'localStorageName') || 'JWT'
-  var hasLocalStorage = path.get(windowAccess, 'localStorage.getItem');
-
-  if(authConfig && hasLocalStorage){
-
-    authConfig.forEach(action => {
-      // Return a function to get the token each time the action is dispatched
-      bearers[action] = function() {
-        let JWT_Token = windowAccess.localStorage.getItem(localStorageName)
-
-        return {
-          headers : {'Authorization': `Bearer ${JWT_Token}`}
-        }
-      }
-    })
-  }
+  // Create headers for each action - depends on hostConfig
+  // See utils/headers
+  const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
 
   const findPrimaryAssociatedModels      = 'find' + primaryModelNameCap + pluralAssociatedModelNameCap
   const addAssociatedModelToPrimary      = 'add' + singleAssociatedModelNameCap + 'To' + primaryModelNameCap
@@ -77,6 +66,17 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
   }
 
   return {
+
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+    //   88888888b dP 888888ba  888888ba
+    //   88        88 88    `8b 88    `8b
+    //  a88aaaa    88 88     88 88     88
+    //   88        88 88     88 88     88
+    //   88        88 88     88 88    .8P
+    //   dP        dP dP     dP 8888888P
+    //  oooooooooooooooooooooooooooooooooo
 
     // ----------------------
     // Find associated models
@@ -104,16 +104,28 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
 
-        // If a rule exists we execute the function to get the token dynamically
-        let bearer = typeof bearers[findPrimaryAssociatedModels] !== 'undefined' ? bearers[findPrimaryAssociatedModels]() : undefined
-
-        return axios.get(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`, bearer)
-          .then(res => dispatch(success(res.data.data)))
-          .catch(res => dispatch(error(res.data, primaryModelId)))
+        return providerUtil(
+          hostConfig,
+          'get',
+          `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`,
+          headers[findPrimaryAssociatedModels]
+        )
+        .then(res => dispatch(success(res.data.data)))
+        .catch(res => dispatch(error(res.data, primaryModelId)))
       }
 
     },
 
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+    //   .d888888  888888ba  888888ba
+    //  d8'    88  88    `8b 88    `8b
+    //  88aaaaa88a 88     88 88     88
+    //  88     88  88     88 88     88
+    //  88     88  88    .8P 88    .8P
+    //  88     88  8888888P  8888888P
+    //  ooooooooooooooooooooooooooooooo
 
     // --------------------
     // Add associated model
@@ -151,17 +163,20 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
       }
 
 
-      // If a rule exists we execute the function to get the token dynamically
-      let bearer = typeof bearers[addAssociatedModelToPrimary] !== 'undefined' ? bearers[addAssociatedModelToPrimary]() : undefined
-
       // Means that model has already been created in database
       if('id' in modelToAssociate){
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`, bearer)
-            .then(res => dispatch(success(associatedModelWithTmpId)))
-            .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
+          return providerUtil(
+            hostConfig,
+            'post',
+            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`,
+            headers[addAssociatedModelToPrimary],
+            modelToAssociate
+          )
+          .then(res => dispatch(success(associatedModelWithTmpId)))
+          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
 
       // Means that model does not exists in database
@@ -169,13 +184,29 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return axios.post(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`, modelToAssociate , bearer)
-            .then(res => dispatch(success(associatedModelWithTmpId)))
-            .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
+          return providerUtil(
+            hostConfig,
+            'post',
+            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`,
+            headers[addAssociatedModelToPrimary],
+            modelToAssociate
+          )
+          .then(res => dispatch(success(associatedModelWithTmpId)))
+          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
         }
       }
     },
 
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+    //   888888ba   88888888b 8888ba.88ba   .88888.  dP     dP  88888888b
+    //   88    `8b  88        88  `8b  `8b d8'   `8b 88     88  88
+    //  a88aaaa8P' a88aaaa    88   88   88 88     88 88    .8P a88aaaa
+    //   88   `8b.  88        88   88   88 88     88 88    d8'  88
+    //   88     88  88        88   88   88 Y8.   .8P 88  .d8P   88
+    //   dP     dP  88888888P dP   dP   dP  `8888P'  888888'    88888888P
+    //  oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     // -----------------------
     // Remove associated model
@@ -203,12 +234,24 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
 
       return dispatch => {
         dispatch(start(modelToDissociate))
-        // If a rule exists we execute the function to get the token dynamically
-        let bearer = typeof bearers[removeAssociatedModelFromPrimary] !== 'undefined' ? bearers[removeAssociatedModelFromPrimary]() : undefined
 
-        return axios.delete(`${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`, bearer)
-          .then(res => dispatch(success(modelToDissociate)))
-          .catch(res => dispatch(error(res.data, modelToDissociate)))
+        // Dispatch an error if no id is provider in model
+        if(!('id' in modelToDissociate)){
+            return new Promise((resolve) => {
+              dispatch(error('no id provided in modelToDissociate : ' +urlAssociatedModel, modelToDissociate))
+              resolve()
+            })
+        }
+
+        return providerUtil(
+          hostConfig,
+          'delete',
+          `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`,
+          headers[removeAssociatedModelFromPrimary],
+
+        )
+        .then(res => dispatch(success(modelToDissociate)))
+        .catch(res => dispatch(error(res.data, modelToDissociate)))
       }
 
     },
