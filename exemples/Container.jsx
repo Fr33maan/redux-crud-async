@@ -53,9 +53,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   const actions = {
     findChannel,
-    isFindingChannel,
     findChannels,
-    isFindingChannels,
     createChannel
   }
   const actionMap = {

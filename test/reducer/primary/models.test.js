@@ -157,5 +157,23 @@ describe('primaryReducerGenerator -- #models', function() {
 
       });
     })
+
+    describe('EMPTY_MODELS', function(){
+
+        it('should return an empty object when EMPTY_MODEL action is dispatched', () => {
+
+          var previousState = [{
+            foo: 'bar'
+          }]
+
+          var action = {
+            type: 'EMPTY_MODELS'
+          }
+          var state = reducer.models(previousState, action)
+
+          state.should.be.an.Array
+          state.length.should.equal(0)
+        });
+    })
   })
 });

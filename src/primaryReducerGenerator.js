@@ -25,7 +25,8 @@ module.exports = function(modelName) {
     }
   }
 
-  A.EMPTY_MODEL = 'EMPTY_' + singleModelNameUp
+  A.EMPTY_MODEL  = 'EMPTY_' + singleModelNameUp
+  A.EMPTY_MODELS = 'EMPTY_' + pluralModelNameUp
 
   return {
 
@@ -135,6 +136,10 @@ module.exports = function(modelName) {
           return state.filter(model => {
             return model.tmpId !== action.data.tmpId
           })
+
+
+        case A.EMPTY_MODELS:
+          return []
 
         default:
         return state

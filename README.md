@@ -101,6 +101,8 @@ Just follow conventions given above.
   pluralizeModels : false,
   socket          : true,
   localStorageName: 'MyJWT',
+  headerContent   : 'AuthBearer {{MyJWT}}',
+  headerFormat    : 'AuthBearerHeaderKey'
   apiSpecs : {
 
     coach : {
@@ -127,111 +129,57 @@ findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 ---
 
 ## Actions
-#### Names
 
 There is a maximum of **9** actions for a given model.  
 eg. primary model = `channel`, associated model = `tag`  
 
-5 primary     ->
-> FIND_CHANNEL   -> GET channels/:id  
-> CREATE_CHANNEL -> POST channels  
-> UPDATE_CHANNEL -> PUT channels/:id  
-> DELETE_CHANNEL -> DELET channels/:id  
-> EMPTY_CHANNEL  -> Synchronous action that will set state.channel = {}
+** 3 primary **
 
-4 association ->
-> FIND_CHANNEL_TAGS       -> GET channels/:channelId/tags/:tagId?  
-> ADD_TAG_TO_CHANNEL      -> POST channels/:channelId/tags/:tagId? (if not tag id is set you must give an object to this function)  
-> REMOVE_TAG_FROM_CHANNEL -> DELETE channels/:channelId/tags/:tagId  
-> EMPTY_CHANNEL_TAGS      -> Synchronous action that will return an empty array
+| actionName      | url                     | param | state     | state Type  |  
+|:---             |:---                     |:---      |:---       |:---         |  
+| `findChannel`   | `GET channels/:id`      | `String` | channel   | `Object`    |  
+| `findChannels`  | `GET channels?request`  | `String` | channels  | `[Object]`  |  
+| `createChannel` | ` POST channels`        | `Object OR FormData `| channel   | `Object`    |  
 
-3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**    
+*updateChannel and deleteChannel come soon*
+
+**You can submit a FormData to `create` but the FormData is transmitted as is and model will not be appended to the state.
+If you need the model to be appended to the state, use a javascript object instead of a FormData.**
 
 
-#### Structure
-findUser(userId) will dispatch following actions :
+** 3 association **
 
+| actionName | url | parameters | state   | state Type | Comment |
+|:---        |:---      |:---   |:---    |:---        |:---  |
+| `findChannelTags` | `GET channels/:channelId/tags/:tagId?` | `String, String` | channelTags | `[Object]` | |
+| `addTagToChannel` | `POST channels/:channelId/tags/:tagId?` |`String, String OR Object` | channelTag | `Object` | if no tag id is set you must give an object to this function |
+| `createChannel` | ` POST channels` | `String, String` | channelTag | `Object` |  |
+
+
+3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**  
+
+** IMPORTANT **  
+An additionnal action exists which empties reducers. Dispatch manually this action to empty your reducers.  
 ```javascript
-
-  var actionTypes = {
-
-    FIND_CHANNEL_START : {
-      type : 'FIND_CHANNEL_START',
-    },
-
-    FIND_CHANNEL_SUCCESS : {
-      type       : 'FIND_CHANNEL_SUCCESS',
-      channel    : {foo: 'bar'},
-      receivedAt : Date.now()
-    },
-
-    FIND_CHANNEL_ERROR : {
-      type  : 'FIND_CHANNEL_ERROR',
-      data  : channelId,
-      error : error // error returned by server or thrown during the actions flow
-    }
-
-  }
+{
+  type : 'EMPTY_CHANNEL'
+}
+{
+  type : 'EMPTY_CHANNELS'
+}
+{
+  type : 'EMPTY_PRIMARY_ASSOCIATED_MODELS'
+}
 ```
+Have a look in [primaryActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/primaryActionGenerator.js) and [associationActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/associationActionGenerator.js) and []() for more precision about dispatched actions.
 
-findUsers(?request) -> request is an additional parameter which will be appened to the url following sails conventions  
 
-```javascript
-
-  var actionTypes = {
-
-    FIND_CHANNELS_START : {
-      type : 'FIND_CHANNELS_START',
-    },
-
-    FIND_CHANNELS_SUCCESS : {
-      type       : 'FIND_CHANNELS_SUCCESS',
-      channels    : {foo: 'bar', tmpId: 'each model will contain a v4 uuid'},
-      receivedAt : Date.now()
-    },
-
-    FIND_CHANNELS_ERROR : {
-      type  : 'FIND_CHANNELS_ERROR',
-      error : error // error returned by server or thrown during the actions flow
-    }
-
-  }
-```
-
-createUser(userToCreate)  
-You can submit a FormData to `create` but the FormData is transmitted as is and model will not be appended to the state.
-If you need the model to be appended to the state, use a javascript object instead of a FormData.   
-
-```javascript
-
-  var actionTypes = {
-
-    CREATE_CHANNEL_START : {
-      type    : 'CREATE_CHANNEL_START',
-      channel : {foo: 'bar', tmpId: 'a v4 uuid'}
-    },
-
-    CREATE_CHANNEL_SUCCESS : {
-      type       : 'CREATE_CHANNEL_SUCCESS',
-      channel    : {foo: 'bar', tmpId: 'a v4 uuid'},
-      receivedAt : Date.now()
-    },
-
-    CREATE_CHANNEL_ERROR : {
-      type  : 'CREATE_CHANNEL_ERROR',
-      data  : {foo: 'bar', tmpId: 'a v4 uuid'}
-      error : error // error return by server
-    }
-
-  }
-```
 
 
 **Soon available**
-- createUsers
 - updateUser
 - deleteUser
-- deleteUsers
+
 
 #### Associations
 redux-crud-async comes with built in association support  
@@ -277,6 +225,8 @@ redux-crud-async comes with built in association support
   }
 
 ```
+
+Now you can import your actions in your containers/components from actions/index.js  
 ---
 
 ## States (Reducers)
@@ -311,16 +261,14 @@ Reducers return the following states usable in your components
 ---
 
 ## TODO
-- better documentation for `the model will not be appended to state`
 - better documentation on how uuid is used
 - clearer doc for `EMPTY` actions
 - websocket support for sails
 - better doc "how to use actions"
 - comment code
 - find a way to test FormData in createModel
-- update & delete for model & models
+- update & delete for model
 - make this module more "database style" with holding of previous records
-- normalize ES5 vs ES6 imports -> can't because of rewire
 - add single actions (signup, signin)
 - make api expectations editables
 - remove arrow functions in tests
@@ -332,3 +280,4 @@ Reducers return the following states usable in your components
 - more tests
 - rewrite of the utils/xhr/* module
 - doc changes
+- added EMPTY_CHANNELS action in reducers

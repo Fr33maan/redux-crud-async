@@ -275,12 +275,6 @@ module.exports = function(modelName, hostConfig){
 
     },
 
-    // TODO might be useless as multiple create could be handle by multiple single create
-    // -------------------
-    // CREATE PLURAL MODEL
-    // -------------------
-
-
 
 
     // -------------------
