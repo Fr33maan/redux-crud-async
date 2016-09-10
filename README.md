@@ -10,7 +10,7 @@ In a near future, I will implement the possibility to create random actions like
 Redux-crud-async is built against 125+ tests  
 
 ## Table of Contents
-1. [SetUp](#setup)  
+1. [Setup](#setup)  
 2. [Conventions](#conventions)  
     a. [Routes](#routes)  
     b. [Authentication](#authentication)  
@@ -18,14 +18,14 @@ Redux-crud-async is built against 125+ tests
 4. [Actions](#actions)  
     a. [Names](#names)  
     b. [Additionnal Actions](#additionnal-actions)  
-5. [States (Reducers)](#states-(reducers))
+5. [States (Reducers)](#states-reducers)
 6. [Todo](#todo)
 7. [Change Log](#change-log)
 
 ---
 
 
-## Set up
+## Setup
 
 #### ActionTypes
 ```javascript
@@ -79,7 +79,7 @@ Redux-crud-async is built against 125+ tests
   }
 
 ```
-
+**EXEMPLE USAGE**
 [Click here to see how much it is easy to use this module](https://github.com/l1br3/redux-crud-async/blob/master/exemples/Container.jsx)
 
 ---
@@ -205,7 +205,7 @@ There is a maximum of **11** actions for a given model which will be automatical
 3 status actions are dispatched for every redux-crud-async action : **START**,  **SUCCESS** and **ERROR**. They are automatically understood by reducers.  
 eg. primary model = `channel`, associated model = `tag`  
 
-** 3 primary **
+**3 primary**
 
 | actionName      | url                     | param | state     | state Type  |  
 |:---             |:---                     |:---      |:---       |:---         |  
@@ -219,7 +219,7 @@ eg. primary model = `channel`, associated model = `tag`
 If you need the model to be appended to the state, use a javascript object instead of a FormData.**
 
 
-** 3 association **
+**3 association**
 
 | actionName | url | parameters | state   | state Type | Comment |
 |:---        |:---      |:---   |:---    |:---        |:---  |
