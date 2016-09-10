@@ -1,4 +1,4 @@
-var capitalize = require('../utils/capitalize')
+var capitalize = require('./utils/capitalize')
 var pluralize  = require('pluralize')
 
 // console.log(actionTypes)

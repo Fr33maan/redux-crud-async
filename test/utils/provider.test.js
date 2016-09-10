@@ -1,5 +1,5 @@
 var rewire       = require('rewire')
-var providerUtil = rewire('../../utils/xhr/provider.js')
+var providerUtil = rewire('../../src/utils/xhr/provider.js')
 var sinon        = require('sinon')
 var should       = require('chai').should()
 var expect       = require('chai').expect

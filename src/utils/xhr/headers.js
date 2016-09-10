@@ -1,9 +1,7 @@
 var path = require('object-path')
 var windowAccess    = typeof window !== 'undefined' ? window : {}  // Make it available in tests
-//
-// function buildHeader(localStorageName){
-//
-// }
+
+
 module.exports = function headersUtil(hostConfig, singleModelName){
   const defaultLocalStorageName = 'JWT'
   var headers = {}

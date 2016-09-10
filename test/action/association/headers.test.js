@@ -1,6 +1,6 @@
 var rewire                     = require('rewire')
 var associationActionGenerator = rewire('../../../src/associationActionGenerator')
-var headersUtil            = rewire('../../../utils/xhr/headers')
+var headersUtil            = rewire('../../../src/utils/xhr/headers')
 var sinon                      = require('sinon')
 var should                     = require('chai').should()
 var expect                     = require('chai').expect

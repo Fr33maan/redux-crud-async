@@ -1,5 +1,5 @@
 var should = require('chai').should()
-var arrayItemsWithTmpId = require('../../utils/arrayItemsWithTmpId')
+var arrayItemsWithTmpId = require('../../src/utils/arrayItemsWithTmpId')
 
 describe('utils/arrayItemsWithTmpId', () => {
 

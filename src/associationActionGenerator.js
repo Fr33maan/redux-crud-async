@@ -1,15 +1,15 @@
 var path            = require('object-path')
 var uuid            = require('uuid')
 var axios           = require('axios')
-var checkModelName  = require('../utils/checkModelName')
-var capitalize      = require('../utils/capitalize')
+var checkModelName  = require('./utils/checkModelName')
+var capitalize      = require('./utils/capitalize')
 var pluralize       = require('pluralize')
-var modelsWithTmpId = require('../utils/arrayItemsWithTmpId')
+var modelsWithTmpId = require('./utils/arrayItemsWithTmpId')
 var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
-var headersUtil  = require('../utils/xhr/headers')
-var providerUtil = require('../utils/xhr/provider')
+var headersUtil  = require('./utils/xhr/headers')
+var providerUtil = require('./utils/xhr/provider')
 
 module.exports= function(primaryModel, associatedModel, hostConfig) {
 
