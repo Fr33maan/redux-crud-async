@@ -129,7 +129,8 @@ Every request which need authentication is sent with the token in the header fol
 
 
 #### Socket  
-We use the [`io.socket.request`](http://sailsjs.org/documentation/reference/web-sockets/socket-client/io-socket-request) to communicate to the server. Make sure that your server can use it if you don't use sails.js on server side.  
+We use the [`io.socket.request`](http://sailsjs.org/documentation/reference/web-sockets/socket-client/io-socket-request) to communicate to the server.  
+Make sure that your server can use it if you don't use sails.js on server side.  
 
 ---
 
