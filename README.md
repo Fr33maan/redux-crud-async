@@ -1,27 +1,88 @@
-# Redux CRUD Async
+# redux-crud-async
 [![Build Status](https://travis-ci.org/l1br3/redux-crud-async.svg?branch=master)](https://travis-ci.org/l1br3/redux-crud-async)
 
-Redux CRUD Async will help you to avoid writing boilerplate code for redundant actions.
+redux-crud-async will make available actions and states very easy to use, just for you.  
+The configuration is minimalist.  
 
-It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR. It should work with socket.io but I havn't tested.  
+It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
 It allows you to use a REST API with authentication with a Bearer Token.    
-In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
+In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`  
 Redux-crud-async is built against 125+ tests  
 
 ## Table of Contents
-1. [Conventions](#conventions)  
+1. [SetUp](#setup)  
+2. [Conventions](#conventions)  
     a. [Routes](#routes)  
     b. [Authentication](#authentication)  
-2. [Configuration](#configuration)
-3. [Actions](#actions)  
+3. [Configuration](#configuration)
+4. [Actions](#actions)  
     a. [Names](#names)  
-    b. [Structure](#structure)  
-    c. [Associations](#associations)  
-4. [States (Reducers)](#states-(reducers))
-5. [Exemple](#exemple)
+    b. [Additionnal Actions](#additionnal-actions)  
+5. [States (Reducers)](#states-(reducers))
 6. [Todo](#todo)
 7. [Change Log](#change-log)
 
+---
+
+
+## Set up
+
+#### ActionTypes
+```javascript
+// redux/actionTypes/index.js
+  var reduxCrudAsync = require('redux-crud-async')
+  var crud = new reduxCrudAsync()
+
+  module.exports = {
+    ...crud.primaryActionTypesFor('channel'),
+    ...crud.primaryActionTypesFor('tag'),
+
+    ...crud.associationActionTypesFor('channel', 'tag')
+  }
+
+```
+
+#### Actions
+```javascript
+// redux/actions/index.js
+  var reduxCrudAsync = require('redux-crud-async')
+
+  var hostConfig = {
+    host            : 'https://my-api.com',
+    prefix          : 'v1', // Optional - default to ''
+    pluralizeModels : false, // Optional - default to true
+
+  }
+
+  var crud = new reduxCrudAsync(hostConfig)
+
+  module.exports = {
+    ...crud.primaryActionsFor('channel'),
+    ...crud.primaryActionsFor('tag'),
+
+    ...crud.associationActionsFor('channel', 'tag')
+  }
+
+```
+
+#### Reducers
+```javascript
+// redux/reducers/index.js
+  var reduxCrudAsync = require('redux-crud-async')
+  var crud = new reduxCrudAsync()
+
+  module.exports = {
+    ...crud.primaryReducerFor('user'),
+    ...crud.primaryReducerFor('pet'),
+
+    ...crud.associationReducerFor('user', 'pet')
+  }
+
+```
+
+[Click here to see how much it is easy to use this module](https://github.com/l1br3/redux-crud-async/blob/master/exemples/Container.jsx)
+
+---
 
 
 ## Conventions
@@ -66,6 +127,9 @@ Every request which need authentication is sent with the token in the header fol
 ```
 
 ---
+
+
+
 
 ##Configuration
 
@@ -126,11 +190,19 @@ findPeople -> will hit `GET http://your-api-host/my-prefix/people`
 findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`  
 findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 
+
+
+
+
+
+
 ---
 
 ## Actions
 
-There is a maximum of **9** actions for a given model.  
+#### Names
+There is a maximum of **11** actions for a given model which will be automatically understood by reducers.  
+3 status actions are dispatched for every redux-crud-async action : **START**,  **SUCCESS** and **ERROR**. They are automatically understood by reducers.  
 eg. primary model = `channel`, associated model = `tag`  
 
 ** 3 primary **
@@ -156,9 +228,8 @@ If you need the model to be appended to the state, use a javascript object inste
 | `createChannel` | ` POST channels` | `String, String` | channelTag | `Object` |  |
 
 
-3 status actions are dispatched for every async action : **START**,  **SUCCESS** and **ERROR**  
+#### Additionnal actions
 
-** IMPORTANT **  
 An additionnal action exists which empties reducers. Dispatch manually this action to empty your reducers.  
 ```javascript
 {
@@ -171,111 +242,50 @@ An additionnal action exists which empties reducers. Dispatch manually this acti
   type : 'EMPTY_PRIMARY_ASSOCIATED_MODELS'
 }
 ```
-Have a look in [primaryActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/primaryActionGenerator.js) and [associationActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/associationActionGenerator.js) and []() for more precision about dispatched actions.
+Have a look in [primaryActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/primaryActionGenerator.js) and [associationActionGenerator](https://github.com/l1br3/redux-crud-async/blob/master/src/associationActionGenerator.js) and [Actions Details](https://github.com/l1br3/redux-crud-async/blob/socket/wiki/actionsDetails.md) for more precision about dispatched actions.
 
 
 
 
-**Soon available**
-- updateUser
-- deleteUser
 
 
-#### Associations
-redux-crud-async comes with built in association support  
-
-- findUserPets(userId, petId?)
-- addPetToUser(userId, petToCreate, userPets?)
-- removePetFromUser(userId, petToRemove)
-
-**Usage**
-
-```javascript
-// redux/actionTypes/index.js
-  var reduxCrudAsync = require('redux-crud-async')
-  var crud = new reduxCrudAsync()
-
-  module.exports = {
-    ...crud.primaryActionTypesFor('channel'),
-    ...crud.primaryActionTypesFor('tag'),
-
-    ...crud.associationActionTypesFor('channel', 'tag')
-  }
-
-```
-
-```javascript
-// redux/actions/index.js
-  var reduxCrudAsync = require('redux-crud-async')
-
-  var hostConfig = {
-    host            : 'https://my-api.com',
-    prefix          : 'v1', // Optional - default to ''
-    pluralizeModels : false, // Optional - default to true
-
-  }
-
-  var crud = new reduxCrudAsync(hostConfig)
-
-  module.exports = {
-    ...crud.primaryActionsFor('channel'),
-    ...crud.primaryActionsFor('tag'),
-
-    ...crud.associationActionsFor('channel', 'tag')
-  }
-
-```
-
-Now you can import your actions in your containers/components from actions/index.js  
----
 
 ## States (Reducers)
 Reducers return the following states usable in your components
 
-- user
-- isFindingUser
-- users
-- isFindingUsers
-- userPets
-- isFindingUserPets
+| state | type |
+|:--- |:--- |
+| channel | `Object` |
+| isFindingChannel | `Boolean` |
+| channels | `[Object]` |
+| isFindingChannels | `Boolean` |
+| channelTags | `[Object]` |
+| isFindingChannelTags | `Boolean` |
 
-**Use it like this**
 
-```javascript
-// redux/reducers/index.js
-  var reduxCrudAsync = require('redux-crud-async')
-  var crud = new reduxCrudAsync()
+See reducers :
+- [primaryReducerGenerator](https://github.com/l1br3/redux-crud-async/blob/socket/src/primaryReducerGenerator.js)
+- [associationReducerGenerator](https://github.com/l1br3/redux-crud-async/blob/socket/src/associationReducerGenerator.js)
 
-  module.exports = {
-    ...crud.primaryReducerFor('user'),
-    ...crud.primaryReducerFor('pet'),
 
-    ...crud.associationReducerFor('user', 'pet')
-  }
 
-```
----
-## Exemple
-
-[Click here to see how much it is easy to use this module in a container](https://github.com/l1br3/redux-crud-async/blob/master/exemples/Container.jsx)
 ---
 
 ## TODO
-- better documentation on how uuid is used
-- clearer doc for `EMPTY` actions
-- websocket support for sails
-- better doc "how to use actions"
+- update & delete for model
+- add isCreating, isRemoving, isAdding, isRemovingFrom
+- make response API less oriented -> change provider and many tests
 - comment code
 - find a way to test FormData in createModel
-- update & delete for model
 - make this module more "database style" with holding of previous records
 - add single actions (signup, signin)
 - make api expectations editables
 - remove arrow functions in tests
 - make a module from utils/xhr
+- add coverage
 
 ## Change Log
-####0.4.0
+##### 0.4.0
 - add socket.io support through the window.io variable
 - more tests
 - rewrite of the utils/xhr/* module
