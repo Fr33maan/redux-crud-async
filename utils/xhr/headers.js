@@ -1,4 +1,4 @@
-import path from 'object-path'
+var path = require('object-path')
 var windowAccess    = typeof window !== 'undefined' ? window : {}  // Make it available in tests
 //
 // function buildHeader(localStorageName){
