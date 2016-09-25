@@ -1,6 +1,5 @@
 var path            = require('object-path')
 var uuid            = require('uuid')
-var axios           = require('axios')
 var checkModelName  = require('../utils/checkModelName')
 var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
@@ -151,12 +150,8 @@ module.exports = function(modelName, hostConfig){
           `${baseUrl}/${urlModel}/${modelId}`,
           headers[findModel]
         )
-        // If a rule exists we execute the function to get the token dynamically
-        // let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
-        //
-        // return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearer)
-          .then(res => dispatch(success(res.data.data)))
-          .catch(res => dispatch(error(res.data, modelId)))
+        .then(res => dispatch(success(res)))
+        .catch(res => dispatch(error(res, modelId)))
       }
 
     },
@@ -195,8 +190,8 @@ module.exports = function(modelName, hostConfig){
           headers[findModels]
         )
 
-        .then(res => dispatch(success(res.data.data)))
-        .catch(res =>dispatch(error(res.data)))
+        .then(res => dispatch(success(res)))
+        .catch(res =>dispatch(error(res)))
       }
 
     },
@@ -270,7 +265,7 @@ module.exports = function(modelName, hostConfig){
           modelToCreate
         )
         .then(res => dispatch(success(modelWithTmpId)))
-        .catch(res => dispatch(error(res.data, modelWithTmpId)))
+        .catch(res => dispatch(error(res, modelWithTmpId)))
       }
 
     },

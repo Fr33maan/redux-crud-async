@@ -1,6 +1,5 @@
 var path            = require('object-path')
 var uuid            = require('uuid')
-var axios           = require('axios')
 var checkModelName  = require('../utils/checkModelName')
 var capitalize      = require('../utils/capitalize')
 var pluralize       = require('pluralize')
@@ -110,8 +109,8 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
           `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`,
           headers[findPrimaryAssociatedModels]
         )
-        .then(res => dispatch(success(res.data.data)))
-        .catch(res => dispatch(error(res.data, primaryModelId)))
+        .then(res => dispatch(success(res)))
+        .catch(res => dispatch(error(res, primaryModelId)))
       }
 
     },
@@ -164,36 +163,22 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
 
 
       // Means that model has already been created in database
-      if('id' in modelToAssociate){
-        return dispatch => {
-          var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
+      const url = 'id' in modelToAssociate
+      ? `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`
+      : `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`
 
-          return providerUtil(
-            hostConfig,
-            'post',
-            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`,
-            headers[addAssociatedModelToPrimary],
-            modelToAssociate
-          )
-          .then(res => dispatch(success(associatedModelWithTmpId)))
-          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
-        }
+      return dispatch => {
+        var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-      // Means that model does not exists in database
-      }else{
-        return dispatch => {
-          var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
-
-          return providerUtil(
-            hostConfig,
-            'post',
-            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`,
-            headers[addAssociatedModelToPrimary],
-            modelToAssociate
-          )
-          .then(res => dispatch(success(associatedModelWithTmpId)))
-          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
-        }
+        return providerUtil(
+          hostConfig,
+          'post',
+          url,
+          headers[addAssociatedModelToPrimary],
+          modelToAssociate
+        )
+        .then(res => dispatch(success(associatedModelWithTmpId)))
+        .catch(res => dispatch(error(res, associatedModelWithTmpId)))
       }
     },
 
@@ -251,7 +236,7 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
 
         )
         .then(res => dispatch(success(modelToDissociate)))
-        .catch(res => dispatch(error(res.data, modelToDissociate)))
+        .catch(res => dispatch(error(res, modelToDissociate)))
       }
 
     },

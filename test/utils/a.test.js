@@ -20,33 +20,36 @@ const mockStore   = configureMockStore(middlewares)
 
 
 describe('findChannels', () => {
-  afterEach(() => {
-    nock.cleanAll()
-  })
+  it('this is a test', (done) => {
 
-  before('rewire host with test values', () => {
-    primaryActionGenerator.__set__({now : () => 123})
-    primaryActionGenerator.__set__({'uuid.v4' : () => 'uuid'})
+    var a = true
 
-    actions = actions('channel', {host : 'http://test.com'})
-  })
+    function test(){
 
-  it('should dispatch CHANNELS_FIND_START and CHANNELS_FIND_SUCCESS when findChannels action is dispatched', (done) => {
-    nock('http://test.com')
-    .get('/channels')
-    .reply(200, { data: [{name: 'im a channel'}] })
+      return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+          if(a){
+            resolve('world is beautiful')
+          }else{
+            reject('this sucks')
+          }
+        })
+        .then(() => {resolve(new Error('im an error'))})
+        .catch(() => {reject(new Error('im an error bis'))})
+      })
+    }
 
-    const expectedActions = [
-      { type: actionTypes.CHANNELS_FIND_START },
-      { type: actionTypes.CHANNELS_FIND_SUCCESS, receivedAt : 123, channels: [{name: 'im a channel', tmpId: 'uuid'}] }
-    ]
-    const store = mockStore({ channels: [] })
-
-    store.dispatch(actions.findChannels(''))
-    .then(() => { // return of async actions
-      store.getActions().should.eql(expectedActions)
+    test().then(res => {
+      console.log(res)
+      console.log('then')
+      done()
     })
-    .then(done)
-    .catch(done)
+
+    .catch(res => {
+      console.log('catch')
+      console.log(res)
+      done()
+    })
+
   })
 })
