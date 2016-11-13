@@ -1,8 +1,9 @@
-var rewire       = require('rewire')
-var providerUtil = rewire('../../src/utils/xhr/provider.js')
-var sinon        = require('sinon')
-var should       = require('chai').should()
-var expect       = require('chai').expect
+var rewire    = require('rewire')
+var XHRmodule = rewire('../../src/utils/xhr/xhr.js')
+var XHR       = XHRmodule.XHR
+var sinon     = require('sinon')
+var should    = require('chai').should()
+var expect    = require('chai').expect
 
 var spy = {}
 var socket = true
@@ -33,7 +34,7 @@ describe('XHR Service Provider', function() {
     spy.request = sinon.spy(socket, 'request')
 
     // Rewire axios and io
-    providerUtil.__set__({axios, io : {socket}})
+    XHRmodule.__set__({axios, io : {socket}})
 
     /* --- END REWIRE --- */
 
@@ -50,14 +51,14 @@ describe('XHR Service Provider', function() {
     describe('- GET request', function(){
 
       it('#axios - should not have a headers in request', () => {
-        providerUtil({}, 'get', 'testUrl')
+        new XHR({}, undefined, 'testUrl').get()
         expect(spy.get.args[0][0]).to.equal('testUrl')
         expect(spy.get.args[0][1]).to.be.undefined
       })
 
       it('#axios - should have a headers in request', () => {
         const headers = {Authorization : 'JWT Token'}
-        providerUtil({}, 'get', 'testUrl', headers)
+        new XHR({}, headers, 'testUrl').get()
         expect(spy.get.args[0][0]).to.equal('testUrl')
         expect(spy.get.args[0][1]).to.equal(headers)
       })
@@ -67,17 +68,11 @@ describe('XHR Service Provider', function() {
 
     describe('- POST request', function(){
 
-      it('#axios - should throw an Error when not called with postData', () => {
-        expect((function(){
-          providerUtil({}, 'post', 'testUrl')
-        })).to.throw(Error)
-      })
-
       it('#axios - should NOT have a headers in request', () => {
         const headers = {Authorization : 'JWT Token'}
         const postData = {test : 123}
 
-        providerUtil({}, 'post', 'testUrl', null, postData)
+        new XHR({}, headers, 'testUrl').post(postData)
         expect(spy.post.args[0][0]).to.equal('testUrl')
         expect(spy.post.args[0][1]).to.equal(postData)
       })
@@ -86,7 +81,7 @@ describe('XHR Service Provider', function() {
         const headers = {Authorization : 'JWT Token'}
         const postData = {test : 123}
 
-        providerUtil({}, 'post', 'testUrl', headers, postData)
+        new XHR({}, headers, 'testUrl').post(postData)
         expect(spy.post.args[0][0]).to.equal('testUrl')
         expect(spy.post.args[0][1]).to.equal(postData)
         expect(spy.post.args[0][2]).to.equal(headers)
@@ -102,7 +97,7 @@ describe('XHR Service Provider', function() {
     describe('- GET request', function(){
 
       it('#socket.io - should NOT have a headers in request', () => {
-        providerUtil({socket}, 'get', 'testUrl')
+        new XHR({socket}, undefined, 'testUrl').get()
         const params = spy.request.args[0][0]
 
         expect(params.method).to.equal('get')
@@ -111,7 +106,7 @@ describe('XHR Service Provider', function() {
 
       it('#socket.io - should have a headers in request', () => {
         const headers = {Authorization : 'JWT Token'}
-        providerUtil({socket}, 'get', 'testUrl', headers)
+        new XHR({socket}, headers, 'testUrl').get()
         const params = spy.request.args[0][0]
 
         expect(params.method).to.equal('get')
@@ -124,17 +119,11 @@ describe('XHR Service Provider', function() {
 
     describe('- POST request', function(){
 
-      it('#axios - should throw an Error when not called with postData', () => {
-        expect((function(){
-          providerUtil({socket}, 'post', 'testUrl')
-        })).to.throw(Error)
-      })
-
       it('#axios - should NOT have a headers in request', () => {
 
         const postData = {test : 123}
 
-        providerUtil({socket}, 'post', 'testUrl', null, postData)
+        new XHR({socket}, undefined, 'testUrl').post(postData)
         const params = spy.request.args[0][0]
 
         expect(params.method).to.equal('post')
@@ -146,7 +135,7 @@ describe('XHR Service Provider', function() {
         const headers = {Authorization : 'JWT Token'}
         const postData = {test : 123}
 
-        providerUtil({socket}, 'post', 'testUrl', headers, postData)
+        new XHR({socket}, headers, 'testUrl').post(postData)
         const params = spy.request.args[0][0]
 
         expect(params.method).to.equal('post')

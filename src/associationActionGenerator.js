@@ -9,9 +9,9 @@ var windowAccess    = typeof window !== 'undefined' ? window : {}
 var now = Date.now
 
 var headersUtil  = require('./utils/xhr/headers')
-var providerUtil = require('./utils/xhr/provider')
+var XHR = require('./utils/xhr/xhr').XHR
 
-module.exports= function(primaryModel, associatedModel, hostConfig) {
+module.exports = function(primaryModel, associatedModel, hostConfig) {
 
   if(!hostConfig || !hostConfig.host) throw new Error('You must instantiate redux-crud-async.associationActionFor with a host => {host: "http://exemple.com"}')
 
@@ -104,14 +104,13 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
 
-        return providerUtil(
-          hostConfig,
-          'get',
-          `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`,
-          headers[findPrimaryAssociatedModels]
-        )
-        .then(res => dispatch(success(res.data.data)))
-        .catch(res => dispatch(error(res.data, primaryModelId)))
+        let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`
+
+        return new XHR(hostConfig, headers[findPrimaryAssociatedModels], url)
+        .get()
+        .then(res => dispatch(success(res)))
+        .catch(err => dispatch(error(err, primaryModelId)))
+
       }
 
     },
@@ -168,15 +167,12 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return providerUtil(
-            hostConfig,
-            'post',
-            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`,
-            headers[addAssociatedModelToPrimary],
-            modelToAssociate
-          )
+          let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToAssociate.id}`
+          return new XHR(hostConfig, headers[addAssociatedModelToPrimary], url)
+          .post(modelToAssociate)
           .then(res => dispatch(success(associatedModelWithTmpId)))
-          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
+          .catch(err => dispatch(error(err, associatedModelWithTmpId)))
+
         }
 
       // Means that model does not exists in database
@@ -184,15 +180,11 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
         return dispatch => {
           var associatedModelWithTmpId = dispatch(start(modelToAssociate))[primaryModelName + singleAssociatedModelNameCap]
 
-          return providerUtil(
-            hostConfig,
-            'post',
-            `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`,
-            headers[addAssociatedModelToPrimary],
-            modelToAssociate
-          )
+          let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}`
+          return new XHR(hostConfig, headers[addAssociatedModelToPrimary], url)
+          .post(modelToAssociate)
           .then(res => dispatch(success(associatedModelWithTmpId)))
-          .catch(res => dispatch(error(res.data, associatedModelWithTmpId)))
+          .catch(err => dispatch(error(err, associatedModelWithTmpId)))
         }
       }
     },
@@ -243,17 +235,12 @@ module.exports= function(primaryModel, associatedModel, hostConfig) {
             })
         }
 
-        return providerUtil(
-          hostConfig,
-          'delete',
-          `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`,
-          headers[removeAssociatedModelFromPrimary],
-
-        )
+        let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`
+        return new XHR(hostConfig, headers[removeAssociatedModelFromPrimary], url)
+        .delete()
         .then(res => dispatch(success(modelToDissociate)))
-        .catch(res => dispatch(error(res.data, modelToDissociate)))
+        .catch(err => dispatch(error(err, modelToDissociate)))
       }
-
     },
   }
 }

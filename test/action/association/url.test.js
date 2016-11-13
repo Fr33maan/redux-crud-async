@@ -2,8 +2,8 @@ var rewire = require('rewire')
 var associationActionGenerator = rewire('../../../src/associationActionGenerator')
 var sinon = require('sinon')
 var should = require('chai').should()
+import { XHR, spy } from '../../mocks/XHR'
 
-var spy = {}
 var d = (action) => action
 var actions, singlizedActions
 
@@ -19,18 +19,7 @@ const singlizedHostConfig = {
 describe('associationActionGenerator', function() {
 
   before('Rewire and spy providerUtil module', () => {
-    const xhr = {
-      providerUtil : function(hostConfig, method, url, headers, postData){
-        return new Promise(resolve => {resolve({
-          data : {
-            data : []
-          }
-        })})
-      }
-    }
-
-    spy.provider = sinon.spy(xhr, 'providerUtil')
-    associationActionGenerator.__set__({providerUtil : xhr.providerUtil})
+    associationActionGenerator.__set__({XHR})
 
     actions = associationActionGenerator('channel', 'tag', hostConfig)
     singlizedActions = associationActionGenerator('channel', 'tag', singlizedHostConfig)
@@ -38,28 +27,31 @@ describe('associationActionGenerator', function() {
 
   beforeEach('reset spy states', () => {
     spy.provider.reset()
+    spy.get.reset()
+    spy.post.reset()
+    spy.delete.reset()
   })
 
   describe('find requests', () => {
 
     it('#findChannelTags without associatedModelId - pluralized', () => {
       actions.findChannelTags('123')(d)
-      spy.provider.calledWith(hostConfig, 'get', 'host/channels/123/tags').should.be.true
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/123/tags').should.be.true
     })
 
     it('#findChannelTags without associatedModelId - singlized', () => {
       singlizedActions.findChannelTags('123')(d)
-      spy.provider.calledWith(singlizedHostConfig, 'get', 'host/channel/123/tag').should.be.true
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag').should.be.true
     })
 
     it('#findChannelTags with an associatedModelId - pluralized', () => {
       actions.findChannelTags('123', '456')(d)
-      spy.provider.calledWith(hostConfig, 'get', 'host/channels/123/tags/456').should.be.true
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/123/tags/456').should.be.true
     })
 
     it('#findChannelTags with an associatedModelId - singlized', () => {
       singlizedActions.findChannelTags('123', '456')(d)
-      spy.provider.calledWith(singlizedHostConfig, 'get', 'host/channel/123/tag/456').should.be.true
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag/456').should.be.true
     })
   })
 
@@ -72,8 +64,11 @@ describe('associationActionGenerator', function() {
       }
 
       actions.addTagToChannel('123', modelToAssociate)(d)
-      spy.provider.calledWith(hostConfig, 'post', 'host/channels/123/tags', undefined, modelToAssociate).should.be.true
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/123/tags').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.post.calledOnce.should.be.true
+      spy.post.calledWith(modelToAssociate).should.be.true
     })
 
     it('#addTagToChannel when modelToAssociate does not exists in database (do not have an "id" property) - singlized', () => {
@@ -83,8 +78,11 @@ describe('associationActionGenerator', function() {
       }
 
       singlizedActions.addTagToChannel('123', modelToAssociate)(d)
-      spy.provider.calledWith(singlizedHostConfig, 'post', 'host/channel/123/tag', undefined, modelToAssociate).should.be.true
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.post.calledOnce.should.be.true
+      spy.post.calledWith(modelToAssociate).should.be.true
     })
 
     it('#addTagToChannel when modelToAssociate already exists in database (already have an "id" property) - pluralized', () => {
@@ -95,8 +93,11 @@ describe('associationActionGenerator', function() {
       }
 
       actions.addTagToChannel('123', modelToAssociate)(d)
-      spy.provider.calledWith(hostConfig, 'post', 'host/channels/123/tags/456', undefined, modelToAssociate).should.be.true
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/123/tags/456').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.post.calledOnce.should.be.true
+      spy.post.calledWith(modelToAssociate).should.be.true
     })
 
     it('#addTagToChannel when modelToAssociate already exists in database (already have an "id" property) - singlized', () => {
@@ -107,8 +108,11 @@ describe('associationActionGenerator', function() {
       }
 
       singlizedActions.addTagToChannel('123', modelToAssociate)(d)
-      spy.provider.calledWith(singlizedHostConfig, 'post', 'host/channel/123/tag/456', undefined, modelToAssociate).should.be.true
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag/456').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.post.calledOnce.should.be.true
+      spy.post.calledWith(modelToAssociate).should.be.true
     })
 
     it('#addTagToChannel when modelToAssociate already exists alreadyAssociatedModels', () => {
@@ -136,8 +140,10 @@ describe('associationActionGenerator', function() {
       }
 
       actions.removeTagFromChannel('123', modelToDissociate)(d)
-      spy.provider.calledWith(hostConfig, 'delete', 'host/channels/123/tags/456', undefined).should.be.true
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/123/tags/456').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.delete.calledOnce.should.be.true
     })
 
     it('#removeTagFromChannel - single', () => {
@@ -148,8 +154,10 @@ describe('associationActionGenerator', function() {
       }
 
       singlizedActions.removeTagFromChannel('123', modelToDissociate)(d)
-      spy.provider.calledWith(singlizedHostConfig, 'delete', 'host/channel/123/tag/456', undefined).should.be.true
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag/456').should.be.true
       spy.provider.callCount.should.equal(1)
+
+      spy.delete.calledOnce.should.be.true
     })
   })
 });

@@ -55,7 +55,7 @@ Redux-crud-async is built against 125+ tests
 
   }
 
-  var crud = new reduxCrudAsync(hostConfig)
+  var crud = new reduxCrudAsync(hostConfig) // hostConfig is mandatory for actionsGenerator
 
   module.exports = {
     ...crud.primaryActionsFor('channel'),
@@ -151,6 +151,7 @@ Make sure that your server can use it if you don't use sails.js on server side.
 | headerContent | `String` | "Bearer {{JWT}}" | The format of your header content **The format is affected by `localStorageName`** |
 | headerFormat | `String` | "Authorization" | The format of your header authorization key |
 | apiSpecs | `Object` | null | Routes where you want to use the JWT_Token |
+| responseSchemas | `Object` | `{http: {success : 'data.data', error : 'data'}, socket : {success : null, error : null}}` | schemas of your API's responses. Where the data can be found in your response object
 
 **The format of headerContent is affected by `localStorageName` if you change the default value**
 ```javascript
@@ -222,8 +223,8 @@ eg. primary model = `channel`, associated model = `tag`
 *updateChannel and deleteChannel come soon*
 
 **You can submit a FormData to `create` but the FormData is transmitted as is and model will not be appended to the state.
-If you need the model to be appended to the state, use a javascript object instead of a FormData.**
-
+If you need the model to be appended to the state, use a javascript object instead of a FormData.
+FormData can be used to send specific CRUD actions like uploading an image**
 
 **3 association**
 
@@ -291,6 +292,9 @@ See reducers :
 - add coverage
 
 ## Change Log
+##### 0.5.0
+- API expectation editables
+
 ##### 0.4.0
 - add socket.io support through the window.io variable
 - more tests
