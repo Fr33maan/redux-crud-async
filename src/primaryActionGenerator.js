@@ -9,7 +9,7 @@ var windowAccess    = typeof window !== 'undefined' ? window : {} // Make it ava
 var now = Date.now
 
 var headersUtil  = require('./utils/xhr/headers')
-var providerUtil = require('./utils/xhr/provider')
+var XHR = require('./utils/xhr/xhr').XHR
 
 module.exports = function(modelName, hostConfig){
 
@@ -136,7 +136,6 @@ module.exports = function(modelName, hostConfig){
       }
 
       return dispatch => {
-
         if(!modelId){
           return new Promise((resolve, reject) => {
             resolve(dispatch(error({message : 'no modelId given for action '+'find' + singleModelNameCap}, undefined)))
@@ -145,18 +144,10 @@ module.exports = function(modelName, hostConfig){
 
         dispatch(start())
 
-        return providerUtil(
-          hostConfig,
-          'get',
-          `${baseUrl}/${urlModel}/${modelId}`,
-          headers[findModel]
-        )
-        // If a rule exists we execute the function to get the token dynamically
-        // let bearer = typeof bearers[findModel] !== 'undefined' ? bearers[findModel]() : undefined
-        //
-        // return axios.get(`${baseUrl}/${urlModel}/${modelId}`, bearer)
-          .then(res => dispatch(success(res.data.data)))
-          .catch(res => dispatch(error(res.data, modelId)))
+        return new XHR(hostConfig, headers[findModel], `${baseUrl}/${urlModel}/${modelId}`)
+        .get()
+        .then(res => dispatch(success(res)))
+        .catch(err => dispatch(error(err, modelId)))
       }
 
     },
@@ -188,15 +179,10 @@ module.exports = function(modelName, hostConfig){
       return dispatch => {
         dispatch(start())
 
-        return providerUtil(
-          hostConfig,
-          'get',
-          `${baseUrl}/${urlModel}${request}`,
-          headers[findModels]
-        )
-
-        .then(res => dispatch(success(res.data.data)))
-        .catch(res =>dispatch(error(res.data)))
+        return new XHR(hostConfig, headers[findModels], `${baseUrl}/${urlModel}${request}`)
+        .get()
+        .then(res => dispatch(success(res)))
+        .catch(err => dispatch(error(err)))
       }
 
     },
@@ -262,33 +248,58 @@ module.exports = function(modelName, hostConfig){
           }
         }
 
-        return providerUtil(
-          hostConfig,
-          'post',
-          `${baseUrl}/${urlModel}`,
-          headers[createModel],
-          modelToCreate
-        )
+        return new XHR(hostConfig, headers[createModel], `${baseUrl}/${urlModel}`)
+        .post(modelToCreate)
         .then(res => dispatch(success(modelWithTmpId)))
-        .catch(res => dispatch(error(res.data, modelWithTmpId)))
+        .catch(err => dispatch(error(err, modelWithTmpId)))
       }
 
     },
 
 
 
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+    // dP     dP  888888ba  888888ba   .d888888  d888888P  88888888b
+    // 88     88  88    `8b 88    `8b d8'    88     88     88
+    // 88     88 a88aaaa8P' 88     88 88aaaaa88a    88    a88aaaa
+    // 88     88  88        88     88 88     88     88     88
+    // Y8.   .8P  88        88    .8P 88     88     88     88
+    // `Y88888P'  dP        8888888P  88     88     dP     88888888P
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
     // -------------------
     // UPDATE SINGLE MODEL
     // -------------------
+
+    // -------------------
+    // UPDATE PLURAL MODELS
+    // -------------------
+    // Sails blueprint does not support multi update
+    // If it is neeeded I will implement it
+
+
+
+    //  http://www.kammerl.de/ascii/AsciiSignature.php
+    //  nancyj-underlined
+
+    // 888888ba   88888888b dP         88888888b d888888P  88888888b
+    // 88    `8b  88        88         88           88     88
+    // 88     88 a88aaaa    88        a88aaaa       88    a88aaaa
+    // 88     88  88        88         88           88     88
+    // 88    .8P  88        88         88           88     88
+    // 8888888P   88888888P 88888888P  88888888P    dP     88888888P
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+
     // -------------------
     // DESTROY SINGLE MODEL
     // -------------------
 
     // -------------------
-    // UPDATE PLURAL MODEL
+    // DESTROY PLURAL MODELS
     // -------------------
-    // -------------------
-    // DESTROY PLURAL MODEL
-    // -------------------
+    // Sails blueprint does not support multi destroy
+    // If it is neeeded I will implement it
   }
 }
