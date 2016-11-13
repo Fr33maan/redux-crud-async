@@ -1,7 +1,7 @@
 # redux-crud-async
 [![Build Status](https://travis-ci.org/l1br3/redux-crud-async.svg?branch=master)](https://travis-ci.org/l1br3/redux-crud-async)
 
-redux-crud-async will make available actions and states very easy to use, just for you.  
+redux-crud-async will create CRUD async actions and states automatically, just for you.  
 The configuration is minimalist.  
 
 It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
@@ -292,6 +292,7 @@ See reducers :
 - add coverage
 - move associated record uuid generation from actions dispatch to reducer
 - state immutability
+- make API endpoints editables
 
 ## Change Log
 ##### 0.6.0
