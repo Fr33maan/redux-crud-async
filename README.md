@@ -7,7 +7,7 @@ The configuration is minimalist.
 It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
 It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`  
-Redux-crud-async is built against 125+ tests  
+Redux-crud-async is built against 135+ tests  
 
 ## Table of Contents
 1. [Setup](#setup)  
@@ -87,6 +87,10 @@ Redux-crud-async is built against 125+ tests
 
 
 ## Conventions
+
+#### General
+It might be obvious but all models returned by your database need to have an unique id.  
+
 
 #### Routes
 This module is built to work with sails.js blueprints routes using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api/wiki/Sub-Generators#blueprints).  
@@ -279,19 +283,20 @@ See reducers :
 ---
 
 ## TODO
-- update & delete for model
-- add isCreating, isRemoving, isAdding, isRemovingFrom
-- make response API less oriented -> change provider and many tests
+- remove arrow functions in tests
+- add isAddingTo, isRemovingFrom
 - comment code
 - find a way to test FormData in createModel
-- make this module more "database style" with holding of previous records
+- make this module more "database style" with holding of previous records in localStorage or IndexedDB
 - add single actions (signup, signin)
-- make api expectations editables
-- remove arrow functions in tests
-- make a module from utils/xhr
 - add coverage
+- move associated record uuid generation from actions dispatch to reducer
+- state immutability
 
 ## Change Log
+##### 0.6.0
+- update and delete primary actions
+
 ##### 0.5.0
 - API expectation editables
 

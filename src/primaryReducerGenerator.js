@@ -1,5 +1,7 @@
 var capitalize = require('./utils/capitalize')
 var pluralize  = require('pluralize')
+var uuid            = require('uuid')
+
 
 // console.log(actionTypes)
 
@@ -9,8 +11,8 @@ module.exports = function(modelName) {
   const singleModelNameUp  = modelName.toUpperCase()
   const singleModelNameCap = capitalize(singleModelName)
 
-  const pluralModelName = pluralize(modelName)
-  const pluralModelNameUp = pluralModelName.toUpperCase()
+  const pluralModelName    = pluralize(modelName)
+  const pluralModelNameUp  = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
 
 
@@ -30,9 +32,9 @@ module.exports = function(modelName) {
 
   return {
 
-    // ----------------
-    // ---- SINGLE ----
-    // ----------------
+    // ---------------
+    // ---- MODEL ----
+    // ---------------
     [`isFinding${singleModelNameCap}`] : (state, action) => {
 
       if(state === undefined) state = false
@@ -59,6 +61,21 @@ module.exports = function(modelName) {
         case A.SINGLE_FIND_SUCCESS:
         return action[singleModelName] || state
 
+        case A.SINGLE_UPDATE_START:
+        case A.SINGLE_UPDATE_SUCCESS:
+          return {
+            ...state,
+            ...action[singleModelName],
+            updating: action.type === A.SINGLE_UPDATE_START // Else action.type === A.SINGLE_UPDATE_SUCCESS and we can set updating to false
+          }
+
+        case A.SINGLE_UPDATE_ERROR:
+          return {
+            ...state,
+            ...action.data,
+            updating: false
+          }
+
         case A.EMPTY_MODEL:
         return {}
 
@@ -70,7 +87,7 @@ module.exports = function(modelName) {
 
 
     // ---------------
-    // --- PLURAL ----
+    // --- MODELS ----
     // ---------------
     [`isFinding${pluralModelNameCap}`] : (state, action) => {
 
@@ -116,6 +133,7 @@ module.exports = function(modelName) {
               ...action[singleModelName],
               created : false,
               creating : true,
+              tmpId : uuid.v4()
             }
           ]
 
@@ -138,6 +156,33 @@ module.exports = function(modelName) {
           })
 
 
+        case A.SINGLE_UPDATE_START:
+        case A.SINGLE_UPDATE_SUCCESS:
+          return state.map(model => {
+            if(model.id === action[singleModelName].id){
+                return {
+                  ...model,
+                  ...action[singleModelName],
+                  updating: action.type === A.SINGLE_UPDATE_START // Else action.type === A.SINGLE_UPDATE_SUCCESS and we can set updating to false
+                }
+            }
+            return {...model}
+          })
+
+
+        case A.SINGLE_UPDATE_ERROR:
+          return state.map(model => {
+            if(model.id === action.data.id){
+                return {
+                  ...model,
+                  ...action.data,
+                  updating: false
+                }
+            }
+            return {...model}
+          })
+
+
         case A.EMPTY_MODELS:
           return []
 
@@ -146,13 +191,5 @@ module.exports = function(modelName) {
       }
 
     },
-
-
-
-    // ----------------
-    // -- CREATE SINGLE
-    // ----------------
-
-
   }
 }

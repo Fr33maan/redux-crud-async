@@ -29,10 +29,11 @@ describe('requests for primaryActionGenerator', function() {
     spy.provider.reset()
     spy.get.reset()
     spy.post.reset()
+    spy.put.reset()
     spy.delete.reset()
   })
 
-  describe('find requests', function(){
+  describe('FIND requests', function(){
 
     it('#findChannel - pluralized', function(){
       actionModule.findChannel('123')(d)
@@ -110,7 +111,7 @@ describe('requests for primaryActionGenerator', function() {
 
   })
 
-  describe('create requests', function(){
+  describe('CREATE requests', function(){
 
     it('#createChannel correctly - pluralized', function(){
 
@@ -149,5 +150,34 @@ describe('requests for primaryActionGenerator', function() {
       actionModule.createChannel({})(d)
       spy.post.calledOnce.should.be.false
     })
+  })
+
+  describe('UPDATE requests', function(){
+
+    it('#updateChannel correctly', function(){
+
+      var oldChannel = {id : 1, foo : 'bar'}
+      var newChannel = {id : 1, foo : 'boo'}
+
+      actionModule.updateChannel(oldChannel, newChannel)(d)
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/1').should.be.true
+      spy.provider.callCount.should.equal(1)
+      spy.put.calledOnce.should.be.true
+      spy.put.calledWith(newChannel).should.be.true
+    })
+
+    it('#updateChannel without an old model should not call put', function(){
+
+      actionModule.updateChannel(undefined)(d)
+      spy.put.calledOnce.should.be.false
+    })
+
+    it('#updateChannel without a newModel should not call put', function(){
+
+      actionModule.updateChannel({}, undefined)(d)
+      spy.put.calledOnce.should.be.false
+    })
+
+
   })
 });

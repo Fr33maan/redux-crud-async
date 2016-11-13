@@ -1,5 +1,4 @@
 var path            = require('object-path')
-var uuid            = require('uuid')
 var axios           = require('axios')
 var checkModelName  = require('./utils/checkModelName')
 var capitalize      = require('./utils/capitalize')
@@ -39,9 +38,11 @@ module.exports = function(modelName, hostConfig){
   const pluralizeUrl = typeof hostConfig.pluralizeModels === 'undefined' ? true : hostConfig.pluralizeModels
   const urlModel     = pluralizeUrl ? pluralModelName : singleModelName
 
-  const findModel   = 'find' + singleModelNameCap
-  const findModels  = 'find' + pluralModelNameCap
-  const createModel = 'create' + singleModelNameCap
+  const findModel    = 'find' + singleModelNameCap
+  const findModels   = 'find' + pluralModelNameCap
+  const createModel  = 'create' + singleModelNameCap
+  const updateModel  = 'update' + singleModelNameCap
+  const destroyModel = 'destroy' + singleModelNameCap
 
   // --------------
   // --- CREATE ---
@@ -79,12 +80,6 @@ module.exports = function(modelName, hostConfig){
   const SINGLE_UPDATE_SUCCESS = singleModelNameUp + '_UPDATE_SUCCESS'
   const SINGLE_UPDATE_ERROR   = singleModelNameUp + '_UPDATE_ERROR'
 
-  // -- PLURAL
-  const PLURAL_UPDATE_START   = pluralModelNameUp + '_UPDATE_START'
-  const PLURAL_UPDATE_SUCCESS = pluralModelNameUp + '_UPDATE_SUCCESS'
-  const PLURAL_UPDATE_ERROR   = pluralModelNameUp + '_UPDATE_ERROR'
-
-
 
   // --------------
   // --- DESTROY --
@@ -93,11 +88,6 @@ module.exports = function(modelName, hostConfig){
   const SINGLE_DESTROY_START   = singleModelNameUp + '_DESTROY_START'
   const SINGLE_DESTROY_SUCCESS = singleModelNameUp + '_DESTROY_SUCCESS'
   const SINGLE_DESTROY_ERROR   = singleModelNameUp + '_DESTROY_ERROR'
-
-  // -- PLURAL
-  const PLURAL_DESTROY_START   = pluralModelNameUp + '_DESTROY_START'
-  const PLURAL_DESTROY_SUCCESS = pluralModelNameUp + '_DESTROY_SUCCESS'
-  const PLURAL_DESTROY_ERROR   = pluralModelNameUp + '_DESTROY_ERROR'
 
 
 
@@ -206,10 +196,7 @@ module.exports = function(modelName, hostConfig){
       function start(model) {
         return {
           type: SINGLE_CREATE_START,
-          [singleModelName] : {
-            ...model,
-            tmpId : uuid.v4()
-          }
+          [singleModelName] : {...model}
         }
       }
       function success(model) {
@@ -272,7 +259,42 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // UPDATE SINGLE MODEL
     // -------------------
+    [updateModel] : (oldModel, newModel) => {
+      function start() {
+        return {
+          type              : SINGLE_UPDATE_START,
+          [singleModelName] : newModel
+        }
+      }
+      function success(validatedModel) {
+        return {
+          type              : SINGLE_UPDATE_SUCCESS,
+          [singleModelName] : validatedModel,
+          message           : singleModelName + ' has been updated'
+        }
+      }
+      function error(error) {
+        return {
+          type              : SINGLE_UPDATE_ERROR,
+          data              : oldModel,
+          error             : error
+        }
+      }
 
+      return dispatch => {
+        if(!newModel || !oldModel){
+          return new Promise((resolve, reject) => {
+            resolve(dispatch(error({message : 'no model given for action update' + singleModelNameCap}, undefined)))
+          })
+        }
+
+        dispatch(start())
+        return new XHR(hostConfig, headers[updateModel], `${baseUrl}/${urlModel}/${newModel.id}`)
+        .put(newModel)
+        .then(res => dispatch(success(res)))
+        .catch(err => dispatch(error(err)))
+      }
+    },
     // -------------------
     // UPDATE PLURAL MODELS
     // -------------------
@@ -284,18 +306,54 @@ module.exports = function(modelName, hostConfig){
     //  http://www.kammerl.de/ascii/AsciiSignature.php
     //  nancyj-underlined
 
-    // 888888ba   88888888b dP         88888888b d888888P  88888888b
-    // 88    `8b  88        88         88           88     88
-    // 88     88 a88aaaa    88        a88aaaa       88    a88aaaa
-    // 88     88  88        88         88           88     88
-    // 88    .8P  88        88         88           88     88
-    // 8888888P   88888888P 88888888P  88888888P    dP     88888888P
-    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+    // 888888ba   88888888b .d88888b  d888888P  888888ba   .88888.  dP    dP
+    // 88    `8b  88        88.    "'    88     88    `8b d8'   `8b Y8.  .8P
+    // 88     88 a88aaaa    `Y88888b.    88    a88aaaa8P' 88     88  Y8aa8P
+    // 88     88  88              `8b    88     88   `8b. 88     88    88
+    // 88    .8P  88        d8'   .8P    88     88     88 Y8.   .8P    88
+    // 8888888P   88888888P  Y88888P     dP     dP     dP  `8888P'     dP
+    // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
     // -------------------
     // DESTROY SINGLE MODEL
     // -------------------
+    [destroyModel] : (oldModel, newModel) => {
+      function start() {
+        return {
+          type              : SINGLE_UPDATE_START,
+          [singleModelName] : newModel
+        }
+      }
+      function success(validatedModel) {
+        return {
+          type              : SINGLE_UPDATE_SUCCESS,
+          [singleModelName] : validatedModel,
+          message           : singleModelName + ' has been updated'
+        }
+      }
+      function error(error) {
+        return {
+          type              : SINGLE_UPDATE_ERROR,
+          data              : oldModel,
+          error             : error
+        }
+      }
 
+      return dispatch => {
+        if(!newModel){
+          return new Promise((resolve, reject) => {
+            resolve(dispatch(error({message : 'no model given for action update' + singleModelNameCap}, undefined)))
+          })
+        }
+
+        dispatch(start())
+
+        return new XHR(hostConfig, headers[updateModel], `${baseUrl}/${urlModel}/${newModel.id}`)
+        .put(newModel)
+        .then(res => dispatch(success(res)))
+        .catch(err => dispatch(error(err)))
+      }
+    },
     // -------------------
     // DESTROY PLURAL MODELS
     // -------------------

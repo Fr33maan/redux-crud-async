@@ -2,7 +2,6 @@ var sinon = require('sinon')
 
 var fns = {
   constructor : function(a, b, c, d, e){
-
   },
 
   get : function(){
@@ -14,6 +13,14 @@ var fns = {
   },
 
   post : function(data){
+    return new Promise(resolve => {resolve({
+      data : {
+        data : []
+      }
+    })})
+  },
+
+  put : function(data){
     return new Promise(resolve => {resolve({
       data : {
         data : []
@@ -43,6 +50,10 @@ export class XHR {
         return fns.post(data)
       }
 
+      put(data){
+        return fns.put(data)
+      }
+
       delete(){
         return fns.delete()
       }
@@ -52,5 +63,6 @@ export const spy = {
   provider  : sinon.spy(fns, 'constructor'),
   get       : sinon.spy(fns, 'get'),
   post      : sinon.spy(fns, 'post'),
+  put       : sinon.spy(fns, 'put'),
   delete    : sinon.spy(fns, 'delete')
 }
