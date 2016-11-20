@@ -177,7 +177,19 @@ describe('requests for primaryActionGenerator', function() {
       actionModule.updateChannel({}, undefined)(d)
       spy.put.calledOnce.should.be.false
     })
+  })
 
 
+  describe('DESTROY requests', function(){
+
+    it('#destroyChannel correctly', function(){
+
+      var channel = {id : 1, foo : 'bar'}
+
+      actionModule.destroyChannel(1)(d)
+      spy.provider.calledWith(hostConfig, undefined, 'host/channels/1').should.be.true
+      spy.provider.callCount.should.equal(1)
+      spy.delete.calledOnce.should.be.true
+    })
   })
 });

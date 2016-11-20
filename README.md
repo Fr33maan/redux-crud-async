@@ -7,7 +7,7 @@ The configuration is minimalist.
 It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
 It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`  
-Redux-crud-async is built against 135+ tests  
+Redux-crud-async is built against 145+ tests  
 
 ## Table of Contents
 1. [Setup](#setup)  
@@ -287,12 +287,15 @@ See reducers :
 - add isAddingTo, isRemovingFrom
 - comment code
 - find a way to test FormData in createModel
-- make this module more "database style" with holding of previous records in localStorage or IndexedDB
 - add single actions (signup, signin)
 - add coverage
 - move associated record uuid generation from actions dispatch to reducer
 - state immutability
 - make API endpoints editables
+- add tests for caching
+- cache timeout by route
+- add cache for get requests
+- add some headers tests
 
 ## Change Log
 ##### 0.6.0

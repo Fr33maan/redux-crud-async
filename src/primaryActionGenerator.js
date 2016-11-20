@@ -317,39 +317,34 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // DESTROY SINGLE MODEL
     // -------------------
-    [destroyModel] : (oldModel, newModel) => {
+    [destroyModel] : modelId => {
       function start() {
         return {
-          type              : SINGLE_UPDATE_START,
-          [singleModelName] : newModel
+          type              : SINGLE_DESTROY_START,
+          modelId
         }
       }
-      function success(validatedModel) {
+      function success() {
         return {
-          type              : SINGLE_UPDATE_SUCCESS,
-          [singleModelName] : validatedModel,
-          message           : singleModelName + ' has been updated'
+          type              : SINGLE_DESTROY_SUCCESS,
+          message           : singleModelName + ' has been destroyed',
+          modelId
         }
       }
       function error(error) {
         return {
-          type              : SINGLE_UPDATE_ERROR,
-          data              : oldModel,
+          type              : SINGLE_DESTROY_ERROR,
+          data              : modelId,
           error             : error
         }
       }
 
       return dispatch => {
-        if(!newModel){
-          return new Promise((resolve, reject) => {
-            resolve(dispatch(error({message : 'no model given for action update' + singleModelNameCap}, undefined)))
-          })
-        }
 
         dispatch(start())
 
-        return new XHR(hostConfig, headers[updateModel], `${baseUrl}/${urlModel}/${newModel.id}`)
-        .put(newModel)
+        return new XHR(hostConfig, headers[destroyModel], `${baseUrl}/${urlModel}/${modelId}`)
+        .delete()
         .then(res => dispatch(success(res)))
         .catch(err => dispatch(error(err)))
       }

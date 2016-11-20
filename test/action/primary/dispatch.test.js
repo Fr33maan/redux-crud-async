@@ -269,4 +269,58 @@ describe('async actions', () => {
     })
   })
 
+
+
+
+
+  describe('destroyChannel', () => {
+
+    it('should dispatch CHANNEL_DESTROY_START and CHANNEL_DESTROY_SUCCESS when destroyChannel action is dispatched', (done) => {
+
+      nock('http://test.com')
+      .delete('/channels/667')
+      .reply(200, { data: {name: 'channel destroyed'}})
+
+      const expectedActions = [
+        { type: actionTypes.CHANNEL_DESTROY_START, modelId : 667 },
+        { type: actionTypes.CHANNEL_DESTROY_SUCCESS, message: 'channel has been destroyed', modelId : 667 }
+      ]
+      const store = mockStore({ channel: {} })
+
+      store.dispatch(actions.destroyChannel(667))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+
+    it('should dispatch CHANNEL_DESTROY_START and CHANNEL_DESTROY_ERROR when destroyChannel action is dispatched and an error happen', (done) => {
+
+      nock('http://test.com')
+      .delete('/channels/667')
+      .reply(500, {message : 'this is an error'})
+
+      const expectedActions = [
+        {
+          type    : actionTypes.CHANNEL_DESTROY_START,
+          modelId : 667
+        },{
+          type    : actionTypes.CHANNEL_DESTROY_ERROR,
+          data    : 667,
+          error   : {message : 'this is an error'}
+        }
+      ]
+
+      const store = mockStore({channels : []})
+
+      store.dispatch(actions.destroyChannel(667))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+  })
+
 })

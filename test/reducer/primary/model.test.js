@@ -95,6 +95,58 @@ describe('primaryReducerGenerator -- #model', function() {
 
 
 
+
+  describe('DESTROY -- ', function(){
+
+    it('should return updated object when MODEL_DESTROY_START action is dispatched', () => {
+      var previousState = {
+        id : 1,
+        foo : 'bar',
+        destroying : false
+      }
+
+      var nextState = {
+        id : 1,
+        foo : 'bar',
+        destroying : true
+      }
+
+      var action = {
+        type   : 'MODEL_DESTROY_START',
+        modelId: 1
+      }
+      var state = reducer.model(previousState, action)
+      state.should.be.an.Object
+      state.should.eql(nextState)
+    });
+
+
+    it('should return updated object when MODEL_DESTROY_SUCCESS action is dispatched', () => {
+      var previousState = {
+        id : 1,
+        foo : 'bar',
+        destroying : true
+      }
+
+      var nextState = {}
+
+      var action = {
+        type: 'MODEL_DESTROY_SUCCESS',
+        modelId: 1
+      }
+      var state = reducer.model(previousState, action)
+
+      state.should.be.an.Object
+      state.should.eql(nextState)
+
+    });
+
+  })
+
+
+
+
+
   it('should return an empty object when EMPTY_MODEL action is dispatched', () => {
 
     var previousState = {

@@ -22,6 +22,10 @@ export class XHR {
   //--- PUBLIC METHODS ---
   //----------------------
   get(){
+    // Add caching here by checking url and last request date
+
+
+    // If no cache is available, make the request
     return new Promise((resolve, reject) => {
       return this.service.get(this.headers, this.url)
       .then(res => resolve(this.extractData(res))) // We must explicitely pass the method otherwise "this" won't be available in extract method

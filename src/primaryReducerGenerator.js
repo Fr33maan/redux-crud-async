@@ -17,7 +17,7 @@ module.exports = function(modelName) {
 
 
   var stateTypes  = ['START', 'SUCCESS', 'ERROR']
-  var actionTypes = ['FIND', 'CREATE', 'UPDATE', 'DELETE']
+  var actionTypes = ['FIND', 'CREATE', 'UPDATE', 'DESTROY']
   var A = {}
 
   for(const actionType of actionTypes){
@@ -76,6 +76,19 @@ module.exports = function(modelName) {
             updating: false
           }
 
+        case A.SINGLE_DESTROY_START:
+          return {
+            ...state,
+            destroying: true
+          }
+
+        case A.SINGLE_DESTROY_ERROR:
+          return {
+            ...state,
+            destroying: false
+          }
+
+        case A.SINGLE_DESTROY_SUCCESS:
         case A.EMPTY_MODEL:
         return {}
 
@@ -182,6 +195,24 @@ module.exports = function(modelName) {
             return {...model}
           })
 
+        // Set destroying true/false for model being destroyed
+        case A.SINGLE_DESTROY_START:
+        case A.SINGLE_DESTROY_ERROR:
+          return state.map(model => {
+            if(model.id === action.modelId){
+              return {
+                ...model,
+                destroying : action.type === A.SINGLE_DESTROY_START
+              }
+            }
+            return {...model}
+          })
+
+        // Remove modelId from state
+        case A.SINGLE_DESTROY_SUCCESS:
+          return state.filter(model => {
+            return model.id !== action.modelId
+          })
 
         case A.EMPTY_MODELS:
           return []

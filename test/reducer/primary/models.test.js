@@ -319,23 +319,140 @@ describe('primaryReducerGenerator -- #models', function() {
 
       });
     })
+  })
 
-    describe('EMPTY_MODELS', function(){
 
-        it('should return an empty object when EMPTY_MODEL action is dispatched', () => {
 
-          var previousState = [{
-            foo: 'bar'
-          }]
+  //  http://www.kammerl.de/ascii/AsciiSignature.php
+  //  nancyj-underlined
 
-          var action = {
-            type: 'EMPTY_MODELS'
-          }
-          var state = reducer.models(previousState, action)
+  // 888888ba   88888888b .d88888b  d888888P  888888ba   .88888.  dP    dP
+  // 88    `8b  88        88.    "'    88     88    `8b d8'   `8b Y8.  .8P
+  // 88     88 a88aaaa    `Y88888b.    88    a88aaaa8P' 88     88  Y8aa8P
+  // 88     88  88              `8b    88     88   `8b. 88     88    88
+  // 88    .8P  88        d8'   .8P    88     88     88 Y8.   .8P    88
+  // 8888888P   88888888P  Y88888P     dP     dP     dP  `8888P'     dP
+  // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
 
-          state.should.be.an.Array
-          state.length.should.equal(0)
-        });
+  describe('DESTROY', () => {
+    describe('MODEL_DESTROY_START', () => {
+
+      it('should set "destoying" to true in the destoyed model in the state on MODEL_DESTROY_START', () => {
+
+        var previousState = [{
+          id        : 1,
+          foo       : 'bar',
+          destroying: false
+        }, {
+          id        : 2,
+          bar       : 'foo',
+          destroying: false
+        }]
+
+        var action = {
+          type: 'MODEL_DESTROY_START',
+          modelId: 1
+        }
+
+        var state = reducer.models(previousState, action)
+
+        state.length.should.equal(2)
+
+        var destroyingModel = state.filter(m => {
+          return m.id === 1
+        })[0]
+
+        // Checking property existance
+        destroyingModel.hasOwnProperty('destroying').should.be.true
+
+        // Checking property values
+        destroyingModel.destroying.should.be.true
+
+      });
     })
+
+    describe('MODEL_DESTROY_SUCCESS', () => {
+
+      it('should set the model destoyed on MODELS_DESTROY_SUCCESS', () => {
+
+        // Model has already been set to 'destroying' in state with START action
+        var previousState = [{
+          id        : 1,
+          foo       : 'bar',
+          destroying: true
+        }, {
+          id        : 2,
+          bar       : 'foo',
+          destroying: false
+        }]
+
+        var action = {
+          type   : 'MODEL_DESTROY_SUCCESS',
+          modelId: 1
+        }
+
+        var state = reducer.models(previousState, action)
+
+        state.length.should.equal(1)
+      });
+    })
+
+    describe('MODEL_DESTROY_ERROR', () => {
+
+      it('should reset the model in state on MODEL_DESTROY_ERROR', () => {
+
+        // Model has already been set to 'destroying' in state with START action
+        var previousState = [{
+          id        : 1,
+          foo       : 'bar',
+          destroying: true
+        }, {
+          id        : 2,
+          bar       : 'foo',
+          destroying: false
+        }]
+
+        var action = {
+          type   : 'MODEL_DESTROY_ERROR',
+          modelId: 1
+        }
+
+        var state = reducer.models(previousState, action)
+
+        state.length.should.equal(2)
+
+        var destroyingModel = state.filter(m => {
+          return m.id === 1
+        })[0]
+
+        // Checking property existance
+        destroyingModel.hasOwnProperty('destroying').should.be.true
+
+        // Checking property values
+        destroyingModel.destroying.should.be.false
+
+      });
+    })
+  })
+
+
+
+
+  describe('EMPTY_MODELS', function(){
+
+    it('should return an empty object when EMPTY_MODEL action is dispatched', () => {
+
+      var previousState = [{
+        foo: 'bar'
+      }]
+
+      var action = {
+        type: 'EMPTY_MODELS'
+      }
+      var state = reducer.models(previousState, action)
+
+      state.should.be.an.Array
+      state.length.should.equal(0)
+    });
   })
 });
