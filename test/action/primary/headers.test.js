@@ -23,7 +23,7 @@ const hostConfig = {
     // Can create models
     coach : {
       // Can't set url for models
-      auth : ['createCoach', 'updateCoach']
+      auth : ['createCoach', 'updateCoach', 'destroyCoach']
     },
   }
 }
@@ -71,6 +71,38 @@ describe('headers for primaryActionGenerator', function() {
       spy.provider.callCount.should.equal(1)
       // headers should be set && bearer should equal hostConfig.localStorageName
       spy.provider.calledWith(hostConfig, {'Authorization': 'Bearer jwt'}, 'host/coaches').should.be.true
+    })
+  })
+
+  describe('update requests', function(){
+
+    it('#updateCoach should be called with a bearer called jwt', function(){
+
+      var oldCoach = {
+        id : 1,
+        foo: 'bar'
+      }
+
+      var newCoach = {
+        id : 1,
+        foo: 'boo'
+      }
+
+      actionModule.updateCoach(oldCoach, newCoach)(d)
+      spy.provider.callCount.should.equal(1)
+      // headers should be set && bearer should equal hostConfig.localStorageName
+      spy.provider.calledWith(hostConfig, {'Authorization': 'Bearer jwt'}, 'host/coaches/1').should.be.true
+    })
+  })
+
+  describe('destroy requests', function(){
+
+    it('#destroyCoach should be called with a bearer called jwt', function(){
+
+      actionModule.destroyCoach(1)(d)
+      spy.provider.callCount.should.equal(1)
+      // headers should be set && bearer should equal hostConfig.localStorageName
+      spy.provider.calledWith(hostConfig, {'Authorization': 'Bearer jwt'}, 'host/coaches/1').should.be.true
     })
   })
 });

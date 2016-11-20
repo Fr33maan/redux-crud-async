@@ -22,6 +22,10 @@ export class XHR {
   //--- PUBLIC METHODS ---
   //----------------------
   get(){
+    // Add caching here by checking url and last request date
+
+
+    // If no cache is available, make the request
     return new Promise((resolve, reject) => {
       return this.service.get(this.headers, this.url)
       .then(res => resolve(this.extractData(res))) // We must explicitely pass the method otherwise "this" won't be available in extract method
@@ -32,6 +36,14 @@ export class XHR {
   post(data){
     return new Promise((resolve, reject) => {
       return this.service.post(this.headers, this.url, data)
+      .then(res => resolve(this.extractData(res))) // We must explicitely pass the method otherwise "this" won't be available in extract method
+      .catch(res => reject(this.extractError(res)))
+    })
+  }
+
+  put(data){
+    return new Promise((resolve, reject) => {
+      return this.service.put(this.headers, this.url, data)
       .then(res => resolve(this.extractData(res))) // We must explicitely pass the method otherwise "this" won't be available in extract method
       .catch(res => reject(this.extractError(res)))
     })
@@ -108,6 +120,17 @@ class Socket {
     return this.request(options)
   }
 
+  put(headers, url, data){
+    const options = {
+      method: 'put',
+      headers,
+      url,
+      data
+    }
+
+    return this.request(options)
+  }
+
   delete(headers, url){
     const options = {
       method: 'delete',
@@ -146,6 +169,10 @@ class Http {
 
   post(headers, url, data){
     return axios.post(url, data, headers)
+  }
+
+  put(headers, url, data){
+    return axios.put(url, data, headers)
   }
 
   delete(headers, url){

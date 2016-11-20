@@ -19,7 +19,6 @@ describe('async actions', () => {
 
   before('rewire host with test values', () => {
     primaryActionGenerator.__set__({now : () => 123})
-    primaryActionGenerator.__set__({'uuid.v4' : () => 'uuid'})
 
     actions = actions('channel', {host : 'http://test.com'})
   })
@@ -127,17 +126,12 @@ describe('async actions', () => {
   })
 
 
-  describe('createChannels', () => {
+  describe('createChannel', () => {
 
     it('should dispatch CHANNEL_CREATE_START and CHANNEL_CREATE_SUCCESS when createChannel action is dispatched', (done) => {
 
       var channelToCreate = {
         foo : 'bar'
-      }
-
-      var channelWithTmpId = {
-        ...channelToCreate,
-        tmpId : 'uuid'
       }
 
       nock('http://test.com')
@@ -147,10 +141,10 @@ describe('async actions', () => {
       const expectedActions = [
         {
           type    : actionTypes.CHANNEL_CREATE_START,
-          channel : channelWithTmpId
+          channel : channelToCreate
         },{
           type    : actionTypes.CHANNEL_CREATE_SUCCESS,
-          channel : channelWithTmpId,
+          channel : channelToCreate,
           message : 'channel has been created'
         }
       ]
@@ -171,11 +165,6 @@ describe('async actions', () => {
         foo : 'bar'
       }
 
-      var channelWithTmpId = {
-        ...channelToCreate,
-        tmpId : 'uuid'
-      }
-
       nock('http://test.com')
       .post('/channels', channelToCreate)
       .reply(500, {message : 'this is an error'})
@@ -183,10 +172,10 @@ describe('async actions', () => {
       const expectedActions = [
         {
           type    : actionTypes.CHANNEL_CREATE_START,
-          channel : channelWithTmpId
+          channel : channelToCreate
         },{
           type    : actionTypes.CHANNEL_CREATE_ERROR,
-          data    : channelWithTmpId,
+          data    : channelToCreate,
           error   : {message : 'this is an error'}
         }
       ]
@@ -194,6 +183,138 @@ describe('async actions', () => {
       const store = mockStore({ channels: [] })
 
       store.dispatch(actions.createChannel(channelToCreate))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+  })
+
+
+  describe('updateChannel', () => {
+
+    it('should dispatch CHANNEL_UPDATE_START and CHANNEL_UPDATE_SUCCESS when updateChannel action is dispatched', (done) => {
+
+      var channelToUpdate = {
+        id  : 123,
+        foo : 'bar'
+      }
+
+      var updatedChannel = {
+        id  : 123,
+        foo : 'boo'
+      }
+
+      nock('http://test.com')
+      .put('/channels/123', updatedChannel)
+      .reply(200, { data: updatedChannel})
+
+      const expectedActions = [
+        {
+          type    : actionTypes.CHANNEL_UPDATE_START,
+          channel : updatedChannel
+        },{
+          type    : actionTypes.CHANNEL_UPDATE_SUCCESS,
+          channel : updatedChannel,
+          message : 'channel has been updated'
+        }
+      ]
+
+      const store = mockStore({ channels: [channelToUpdate] })
+
+      store.dispatch(actions.updateChannel(channelToUpdate, updatedChannel))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+
+    it('should dispatch CHANNEL_UPDATE_START and CHANNEL_UPDATE_ERROR when updateChannel action is dispatched and an error happen', (done) => {
+
+      var channelToUpdate = {
+        id  : 123,
+        foo : 'bar'
+      }
+
+      var updatedChannel = {
+        id  : 123,
+        foo : 'boo'
+      }
+
+      nock('http://test.com')
+      .put('/channels/123', updatedChannel)
+      .reply(500, {message : 'this is an error'})
+
+      const expectedActions = [
+        {
+          type    : actionTypes.CHANNEL_UPDATE_START,
+          channel : updatedChannel
+        },{
+          type    : actionTypes.CHANNEL_UPDATE_ERROR,
+          data    : channelToUpdate,
+          error   : {message : 'this is an error'}
+        }
+      ]
+
+      const store = mockStore({ channels: [channelToUpdate] })
+
+      store.dispatch(actions.updateChannel(channelToUpdate, updatedChannel))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+  })
+
+
+
+
+
+  describe('destroyChannel', () => {
+
+    it('should dispatch CHANNEL_DESTROY_START and CHANNEL_DESTROY_SUCCESS when destroyChannel action is dispatched', (done) => {
+
+      nock('http://test.com')
+      .delete('/channels/667')
+      .reply(200, { data: {name: 'channel destroyed'}})
+
+      const expectedActions = [
+        { type: actionTypes.CHANNEL_DESTROY_START, modelId : 667 },
+        { type: actionTypes.CHANNEL_DESTROY_SUCCESS, message: 'channel has been destroyed', modelId : 667 }
+      ]
+      const store = mockStore({ channel: {} })
+
+      store.dispatch(actions.destroyChannel(667))
+      .then(() => { // return of async actions
+        store.getActions().should.eql(expectedActions)
+      })
+      .then(done)
+      .catch(done)
+    })
+
+    it('should dispatch CHANNEL_DESTROY_START and CHANNEL_DESTROY_ERROR when destroyChannel action is dispatched and an error happen', (done) => {
+
+      nock('http://test.com')
+      .delete('/channels/667')
+      .reply(500, {message : 'this is an error'})
+
+      const expectedActions = [
+        {
+          type    : actionTypes.CHANNEL_DESTROY_START,
+          modelId : 667
+        },{
+          type    : actionTypes.CHANNEL_DESTROY_ERROR,
+          data    : 667,
+          error   : {message : 'this is an error'}
+        }
+      ]
+
+      const store = mockStore({channels : []})
+
+      store.dispatch(actions.destroyChannel(667))
       .then(() => { // return of async actions
         store.getActions().should.eql(expectedActions)
       })

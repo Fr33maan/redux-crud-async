@@ -21,13 +21,13 @@ describe('All actions methods', () => {
 
   describe('update methods', () => {
     it('actions should have a single update action', () => {
-      // actions.should.have.property('updateChannel')
+      actions.should.have.property('updateChannel')
     })
   })
 
   describe('destroy methods', () => {
     it('actions should have a single destroy action', () => {
-      // actions.should.have.property('destroyChannel')
+      actions.should.have.property('destroyChannel')
     })
   })
 
