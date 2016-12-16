@@ -147,7 +147,7 @@ class Socket {
       io.socket.request(config, (res, JWR) => {
 
         // Check if statusCode is 2xx
-        if(toString(JWR.statusCode).match(/^2/)){
+        if(String(JWR.statusCode).match(/^2/)){
           return resolve(res)
 
         }else{
