@@ -1,6 +1,6 @@
 var path = require('object-path')
 var axios = require('axios')
-const io = typeof io !== 'undefined' ? io : null
+const io = typeof window !== 'undefined' && typeof window.io !== 'undefined' ? window.io : null
 
 const defaultSocketSuccess = null
 const defaultSocketError   = null
@@ -147,7 +147,7 @@ class Socket {
       io.socket.request(config, (res, JWR) => {
 
         // Check if statusCode is 2xx
-        if(JWR.statusCode.match(/^2/)){
+        if(toString(JWR.statusCode).match(/^2/)){
           return resolve(res)
 
         }else{

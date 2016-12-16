@@ -298,8 +298,9 @@ See reducers :
 - add some headers tests
 
 ## Change Log
-##### 0.6.0
+##### 0.6.1
 - update and delete primary actions
+- fix bug when building with webpack - io was undefined
 
 ##### 0.5.0
 - API expectation editables
