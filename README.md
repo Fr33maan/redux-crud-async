@@ -7,7 +7,7 @@ The configuration is minimalist.
 It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
 It allows you to use a REST API with authentication with a Bearer Token.    
 In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`  
-Redux-crud-async is built against 145+ tests  
+Redux-crud-async is built against 150+ tests. Unfortunately this does not mean that redux-crud-async is bug free, please send issues if you find one !
 
 ## Table of Contents
 1. [Setup](#setup)  
@@ -284,7 +284,6 @@ See reducers :
 
 ## TODO
 - remove arrow functions in tests
-- add isAddingTo, isRemovingFrom
 - comment code
 - find a way to test FormData in createModel
 - add single actions (signup, signin)
@@ -298,9 +297,10 @@ See reducers :
 - add some headers tests
 
 ## Change Log
-##### 0.6.1
+##### 0.6.3
 - update and delete primary actions
 - fix bug when building with webpack - io was undefined
+- fix silly bugs and add tests for them
 
 ##### 0.5.0
 - API expectation editables

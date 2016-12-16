@@ -67,9 +67,11 @@ export class XHR {
     switch(this.service.constructor.name){
       case 'Socket':
         schema = path.get(this.config, 'responseSchemas.socket.success') || defaultSocketSuccess
+        break
 
       case 'Http':
         schema = path.get(this.config, 'responseSchemas.http.success') || defaultHttpSuccess
+        break
     }
 
     // Returning response
@@ -84,9 +86,11 @@ export class XHR {
     switch(this.service.constructor.name){
       case 'Socket':
         schema = path.get(this.config, 'responseSchemas.socket.error') || defaultSocketError
+        break
 
       case 'Http':
         schema = path.get(this.config, 'responseSchemas.http.error') || defaultHttpError
+        break
     }
     // Returning response
     return schema ? path.get(data, schema) : data
