@@ -29,6 +29,7 @@ Redux-crud-async is built against 150+ tests. Unfortunately this does not mean t
 ## Setup
 
 #### NPM
+you can [find it on NPM](https://www.npmjs.com/package/redux-crud-async)
 ```
 npm i -S redux-crud-async
 ```
