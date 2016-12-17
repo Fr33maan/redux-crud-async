@@ -28,6 +28,11 @@ Redux-crud-async is built against 150+ tests. Unfortunately this does not mean t
 
 ## Setup
 
+#### NPM
+```
+npm i -S redux-crud-async
+```
+
 #### ActionTypes
 ```javascript
 // redux/actionTypes/index.js
