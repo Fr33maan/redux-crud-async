@@ -229,8 +229,10 @@ eg. primary model = `channel`, associated model = `tag`
 | `findChannel`   | `GET channels/:id`      | `String` | channel   | `Object`    |  
 | `findChannels`  | `GET channels?request`  | `String` | channels  | `[Object]`  |  
 | `createChannel` | ` POST channels`        | `Object OR FormData `| channel   | `Object`    |  
+| `updateChannel` | ` PUT channels`         | `Object`| channel   | `Object`    |  
+| `destroyChannel` | ` DELETE channels`         | `Object`| channel   | `Object`    |  
 
-*updateChannel and deleteChannel come soon*
+
 
 **You can submit a FormData to `create` but the FormData is transmitted as is and model will not be appended to the state.
 If you need the model to be appended to the state, use a javascript object instead of a FormData.

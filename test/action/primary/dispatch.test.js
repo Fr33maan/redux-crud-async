@@ -223,7 +223,7 @@ describe('async actions', () => {
 
       const store = mockStore({ channels: [channelToUpdate] })
 
-      store.dispatch(actions.updateChannel(channelToUpdate, updatedChannel))
+      store.dispatch(actions.updateChannel(updatedChannel))
       .then(() => { // return of async actions
         store.getActions().should.eql(expectedActions)
       })
@@ -253,14 +253,13 @@ describe('async actions', () => {
           channel : updatedChannel
         },{
           type    : actionTypes.CHANNEL_UPDATE_ERROR,
-          data    : channelToUpdate,
           error   : {message : 'this is an error'}
         }
       ]
 
       const store = mockStore({ channels: [channelToUpdate] })
 
-      store.dispatch(actions.updateChannel(channelToUpdate, updatedChannel))
+      store.dispatch(actions.updateChannel(updatedChannel))
       .then(() => { // return of async actions
         store.getActions().should.eql(expectedActions)
       })

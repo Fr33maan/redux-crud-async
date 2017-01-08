@@ -61,18 +61,29 @@ module.exports = function(modelName) {
         case A.SINGLE_FIND_SUCCESS:
         return action[singleModelName] || state
 
+        // Returns new values with a property wich contains old values
         case A.SINGLE_UPDATE_START:
-        case A.SINGLE_UPDATE_SUCCESS:
           return {
             ...state,
             ...action[singleModelName],
-            updating: action.type === A.SINGLE_UPDATE_START // Else action.type === A.SINGLE_UPDATE_SUCCESS and we can set updating to false
+            [`_old${singleModelNameCap}`] : {...state},
+            updating : true
           }
 
+        // returns new values only
+        case A.SINGLE_UPDATE_SUCCESS:
+          const newModel = {
+            ...state,
+            ...action[singleModelName],
+            updating: false
+          }
+          delete newModel._oldModel
+          return newModel
+
+        // returns old values
         case A.SINGLE_UPDATE_ERROR:
           return {
-            ...state,
-            ...action.data,
+            ...state._oldModel,
             updating: false
           }
 

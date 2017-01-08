@@ -84,7 +84,7 @@ describe('XHR provider', function() {
   describe('XHR - Socket Provider', function(){
 
     describe('success', function(){
-      it('should extract data from HTTP response - default schema to res = {data : {data : value}}', function(){
+      it('should extract data from Socket response - default schema to res = {data : {data : value}}', function(){
 
         const XHRInstance = new XHR({socket : true})
         const value = 'success'
@@ -93,7 +93,7 @@ describe('XHR provider', function() {
 
       })
 
-      it('should extract error from HTTP response - custom schema', function(){
+      it('should extract error from Socket response - custom schema', function(){
 
         const XHRInstance = new XHR({
           socket : true,
@@ -117,7 +117,7 @@ describe('XHR provider', function() {
     })
 
     describe('error', function(){
-      it('should extract data from HTTP response - default schema to res = {data : {data : value}}', function(){
+      it('should extract data from Socket response - default schema to res = {data : {data : value}}', function(){
 
         const XHRInstance = new XHR({socket : true})
         const value = 'error'
@@ -125,7 +125,7 @@ describe('XHR provider', function() {
         expect(XHRInstance.extractError(value)).to.equal(value)
       })
 
-      it('should extract error from HTTP response - custom schema', function(){
+      it('should extract error from Socket response - custom schema', function(){
 
         const XHRInstance = new XHR({
           socket : true,

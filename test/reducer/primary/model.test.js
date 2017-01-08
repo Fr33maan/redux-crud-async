@@ -47,7 +47,8 @@ describe('primaryReducerGenerator -- #model', function() {
       var nextState = {
         id : 1,
         foo : 'boo',
-        updating : true
+        updating : true,
+        _oldModel : previousState
       }
 
       var action = {

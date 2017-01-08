@@ -259,7 +259,7 @@ module.exports = function(modelName, hostConfig){
     // -------------------
     // UPDATE SINGLE MODEL
     // -------------------
-    [updateModel] : (oldModel, newModel) => {
+    [updateModel] : (newModel) => {
       function start() {
         return {
           type              : SINGLE_UPDATE_START,
@@ -276,13 +276,12 @@ module.exports = function(modelName, hostConfig){
       function error(error) {
         return {
           type              : SINGLE_UPDATE_ERROR,
-          data              : oldModel,
           error             : error
         }
       }
 
       return dispatch => {
-        if(!newModel || !oldModel){
+        if(!newModel){
           return new Promise((resolve, reject) => {
             resolve(dispatch(error({message : 'no model given for action update' + singleModelNameCap}, undefined)))
           })

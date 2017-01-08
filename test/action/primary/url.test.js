@@ -159,7 +159,7 @@ describe('requests for primaryActionGenerator', function() {
       var oldChannel = {id : 1, foo : 'bar'}
       var newChannel = {id : 1, foo : 'boo'}
 
-      actionModule.updateChannel(oldChannel, newChannel)(d)
+      actionModule.updateChannel(newChannel)(d)
       spy.provider.calledWith(hostConfig, undefined, 'host/channels/1').should.be.true
       spy.provider.callCount.should.equal(1)
       spy.put.calledOnce.should.be.true
@@ -174,7 +174,7 @@ describe('requests for primaryActionGenerator', function() {
 
     it('#updateChannel without a newModel should not call put', function(){
 
-      actionModule.updateChannel({}, undefined)(d)
+      actionModule.updateChannel(undefined)(d)
       spy.put.calledOnce.should.be.false
     })
   })
