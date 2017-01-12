@@ -1,6 +1,6 @@
 {
   "name": "redux-crud-async",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "crud async actions for redux",
   "main": "index.js",
   "directories": {

@@ -291,20 +291,23 @@ See reducers :
 ---
 
 ## TODO
+- make API endpoints editables
+- add cache for get requests
+- cache timeout by route
 - remove arrow functions in tests
 - comment code
 - find a way to test FormData in createModel
 - add single actions (signup, signin)
 - add coverage
-- move associated record uuid generation from actions dispatch to reducer
+- move associated record uuid generation from associationActions dispatch to reducer
 - state immutability
-- make API endpoints editables
 - add tests for caching
-- cache timeout by route
-- add cache for get requests
 - add some headers tests
 
 ## Change Log
+##### 0.7.0
+- removed second parameter from update action
+
 ##### 0.6.3
 - update and delete primary actions
 - fix bug when building with webpack - io was undefined
