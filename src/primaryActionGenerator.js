@@ -24,10 +24,6 @@ module.exports = function(modelName, hostConfig){
   const pluralModelNameUp  = pluralModelName.toUpperCase()
   const pluralModelNameCap = capitalize(pluralModelName)
 
-  // Create headers for each action - depends on hostConfig
-  // See utils/headers
-  const headers = headersUtil(hostConfig, singleModelName)
-
 
   // ---------------
   // --HOST CONFIG--
@@ -134,6 +130,10 @@ module.exports = function(modelName, hostConfig){
 
         dispatch(start())
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, singleModelName)
+
         return new XHR(hostConfig, headers[findModel], `${baseUrl}/${urlModel}/${modelId}`)
         .get()
         .then(res => dispatch(success(res)))
@@ -235,6 +235,10 @@ module.exports = function(modelName, hostConfig){
           }
         }
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, singleModelName)
+
         return new XHR(hostConfig, headers[createModel], `${baseUrl}/${urlModel}`)
         .post(modelToCreate)
         .then(res => dispatch(success(modelWithTmpId)))
@@ -286,6 +290,10 @@ module.exports = function(modelName, hostConfig){
             resolve(dispatch(error({message : 'no model given for action update' + singleModelNameCap}, undefined)))
           })
         }
+
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, singleModelName)
 
         dispatch(start())
         return new XHR(hostConfig, headers[updateModel], `${baseUrl}/${urlModel}/${newModel.id}`)
@@ -342,6 +350,10 @@ module.exports = function(modelName, hostConfig){
 
         dispatch(start())
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, singleModelName)
+        
         return new XHR(hostConfig, headers[destroyModel], `${baseUrl}/${urlModel}/${modelId}`)
         .delete()
         .then(res => dispatch(success(res)))

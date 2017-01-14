@@ -38,13 +38,7 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
   const urlPrimaryModel    = pluralizeUrl ? pluralPrimaryModelName    : primaryModelName
   const urlAssociatedModel = pluralizeUrl ? pluralAssociatedModelName : singleAssociatedModelName
 
-  // -------------
-  // -- HEADERS --
-  // -------------
 
-  // Create headers for each action - depends on hostConfig
-  // See utils/headers
-  const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
 
   const findPrimaryAssociatedModels      = 'find' + primaryModelNameCap + pluralAssociatedModelNameCap
   const addAssociatedModelToPrimary      = 'add' + singleAssociatedModelNameCap + 'To' + primaryModelNameCap
@@ -106,6 +100,10 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
 
         let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
+
         return new XHR(hostConfig, headers[findPrimaryAssociatedModels], url)
         .get()
         .then(res => dispatch(success(res)))
@@ -161,6 +159,9 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
         }
       }
 
+      // Create headers for each action - depends on hostConfig
+      // See utils/headers
+      const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
 
       // Means that model has already been created in database
       if('id' in modelToAssociate){
@@ -235,6 +236,10 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
             })
         }
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
+        
         let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`
         return new XHR(hostConfig, headers[removeAssociatedModelFromPrimary], url)
         .delete()
