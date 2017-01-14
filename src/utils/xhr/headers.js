@@ -15,8 +15,7 @@ module.exports = function headersUtil(hostConfig, singleModelName){
   var headerContent    = path.get(hostConfig, 'headerContent') || `Bearer {{${localStorageName}}}`
   var headerFormat     = path.get(hostConfig, 'headerFormat') || 'Authorization'
   let JWT = windowAccess.localStorage.getItem(localStorageName)
-
-  if(!JWT) console.error(`WARNING - can not find ${localStorageName} in local storage`)
+  
   authConfig.forEach(action => {
     let authBearer = headerContent.replace(`{{${localStorageName}}}`, JWT)
 
