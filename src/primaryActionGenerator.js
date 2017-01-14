@@ -169,6 +169,10 @@ module.exports = function(modelName, hostConfig){
       return dispatch => {
         dispatch(start())
 
+        // Create headers for each action - depends on hostConfig
+        // See utils/headers
+        const headers = headersUtil(hostConfig, singleModelName)
+
         return new XHR(hostConfig, headers[findModels], `${baseUrl}/${urlModel}${request}`)
         .get()
         .then(res => dispatch(success(res)))
@@ -353,7 +357,7 @@ module.exports = function(modelName, hostConfig){
         // Create headers for each action - depends on hostConfig
         // See utils/headers
         const headers = headersUtil(hostConfig, singleModelName)
-        
+
         return new XHR(hostConfig, headers[destroyModel], `${baseUrl}/${urlModel}/${modelId}`)
         .delete()
         .then(res => dispatch(success(res)))
