@@ -53,6 +53,16 @@ describe('associationActionGenerator', function() {
       singlizedActions.findChannelTags('123', '456')(d)
       spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag/456').should.be.true
     })
+
+    it('#findChannelTags with an associatedModelId and parameters', () => {
+      singlizedActions.findChannelTags('123', '456', '?limit=1000')(d)
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag/456?limit=1000').should.be.true
+    })
+
+    it('#findChannelTags without an associatedModelId and parameters', () => {
+      singlizedActions.findChannelTags('123', null, '?limit=1000')(d)
+      spy.provider.calledWith(singlizedHostConfig, undefined, 'host/channel/123/tag?limit=1000').should.be.true
+    })
   })
 
   describe('add requests', () => {

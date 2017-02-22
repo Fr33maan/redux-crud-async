@@ -75,7 +75,7 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
     // ----------------------
     // Find associated models
     // ----------------------
-    [findPrimaryAssociatedModels] : (primaryModelId, associatedModelId) => {
+    [findPrimaryAssociatedModels] : (primaryModelId, associatedModelId, parameters) => {
 
       function start() {
         return {type: A.FIND_PRIMARY_ASSOCIATED_MODELS_START}
@@ -97,8 +97,9 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
       return dispatch => {
         dispatch(start())
         associatedModelId = associatedModelId ? '/'+associatedModelId : ''
+        parameters = parameters || ''
 
-        let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}`
+        let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}${associatedModelId}${parameters}`
 
         // Create headers for each action - depends on hostConfig
         // See utils/headers
@@ -239,7 +240,7 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
         // Create headers for each action - depends on hostConfig
         // See utils/headers
         const headers = headersUtil(hostConfig, `${primaryModelName}${pluralAssociatedModelNameCap}`)
-        
+
         let url = `${baseUrl}/${urlPrimaryModel}/${primaryModelId}/${urlAssociatedModel}/${modelToDissociate.id}`
         return new XHR(hostConfig, headers[removeAssociatedModelFromPrimary], url)
         .delete()
