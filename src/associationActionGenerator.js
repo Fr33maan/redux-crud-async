@@ -83,6 +83,7 @@ module.exports = function(primaryModel, associatedModel, hostConfig) {
       function success(models) {
         return {
           type                                             : A.FIND_PRIMARY_ASSOCIATED_MODELS_SUCCESS,
+          parentId                                         : primaryModelId,
           [primaryModelName + pluralAssociatedModelNameCap]: modelsWithTmpId(models),
           receivedAt                                       : now()
         }

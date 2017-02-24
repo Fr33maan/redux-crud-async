@@ -46,7 +46,7 @@ describe('async actions', () => {
 
       const expectedActions = [
         { type: actionTypes.FIND_CHANNEL_TAGS_START },
-        { type: actionTypes.FIND_CHANNEL_TAGS_SUCCESS, receivedAt : 123, channelTags: [{name: 'im a channel', tmpId: 'uuid'}] }
+        { type: actionTypes.FIND_CHANNEL_TAGS_SUCCESS, receivedAt : 123, parentId: '667', channelTags: [{name: 'im a channel', tmpId: 'uuid'}] }
       ]
       const store = mockStore({ channelTags: [] })
 
