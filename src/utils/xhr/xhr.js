@@ -4,7 +4,7 @@ const io = typeof window !== 'undefined' && typeof window.io !== 'undefined' ? w
 
 const defaultSocketSuccess = null
 const defaultSocketError   = null
-const defaultHttpSuccess   = 'data.data'
+const defaultHttpSuccess   = 'data'
 const defaultHttpError     = 'data'
 
 export class XHR {
