@@ -1,24 +1,24 @@
 # redux-crud-async
 [![Build Status](https://travis-ci.org/l1br3/redux-crud-async.svg?branch=master)](https://travis-ci.org/l1br3/redux-crud-async)
 
-redux-crud-async will create CRUD async actions and states automatically, just for you.  
-The configuration is minimalist.  
+redux-crud-async will create CRUD async actions and states automatically, just for you.
+The configuration is minimalist.
 
-It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.  
-It allows you to use a REST API with authentication with a Bearer Token.    
-In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`  
+It currently uses [axios](https://github.com/mzabriskie/axios) or [sails.io](https://github.com/balderdashy/sails.io.js) websocket (custom socket.io) for XHR.
+It allows you to use a REST API with authentication with a Bearer Token.
+In a near future, I will implement the possibility to create random actions like `sign_in`, `sign_out` or `tranformThisLeadInGold`
 Redux-crud-async is built against 150+ tests. Unfortunately this does not mean that redux-crud-async is bug free, please send issues if you find one !
 
 ## Table of Contents
-1. [Setup](#setup)  
-2. [Conventions](#conventions)  
-    a. [Routes](#routes)  
-    b. [Authentication](#authentication)  
-    c. [Socket](#socket)  
+1. [Setup](#setup)
+2. [Conventions](#conventions)
+    a. [Routes](#routes)
+    b. [Authentication](#authentication)
+    c. [Socket](#socket)
 3. [Configuration](#configuration)
-4. [Actions](#actions)  
-    a. [Names](#names)  
-    b. [Additionnal Actions](#additionnal-actions)  
+4. [Actions](#actions)
+    a. [Names](#names)
+    b. [Additionnal Actions](#additionnal-actions)
 5. [States (Reducers)](#states-reducers)
 6. [Todo](#todo)
 7. [Change Log](#change-log)
@@ -95,37 +95,37 @@ npm i -S redux-crud-async
 ## Conventions
 
 #### General
-It might be obvious but all models returned by your database need to have an unique id.  
+It might be obvious but all models returned by your database need to have an unique id.
 
 
 #### Routes
-This module is built to work with sails.js blueprints routes using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api/wiki/Sub-Generators#blueprints).  
-It differentiate singular and plural model name : findUser !== findUsers  
+This module is built to work with sails.js blueprints routes using [sails-rest-api conventions](https://github.com/ghaiklor/generator-sails-rest-api/wiki/Sub-Generators#blueprints).
+It differentiate singular and plural model name : findUser !== findUsers
 **IMPORTANT !**
-As sails.js, this module uses [pluralize module](https://www.npmjs.com/package/pluralize) which pluralize words grammaticaly.  
+As sails.js, this module uses [pluralize module](https://www.npmjs.com/package/pluralize) which pluralize words grammaticaly.
 
-some exemples :   
-channel -> channels  
-person  -> people  
-coach   -> coaches  
+some exemples :
+channel -> channels
+person  -> people
+coach   -> coaches
 
 By default, all your routes will be pluralized, `Person` model will have the following :
 
-**state :**  
-person - a single person  
-people - all your "persons"  
+**state :**
+person - a single person
+people - all your "persons"
 
 **actions :**
-findPerson -> will hit `GET /people/:id`  
-findPeople -> will hit `GET /people`  
+findPerson -> will hit `GET /people/:id`
+findPeople -> will hit `GET /people`
 
 **You can unpluralize your urls by setting it in the config**
 
 
 
 #### Authentication
-`redux-crud-async` uses a Bearer Token to authenticate requests. It is store in `window.localStorage`.  
-Every request which need authentication is sent with the token in the header following this convention :  
+`redux-crud-async` uses a Bearer Token to authenticate requests. It is store in `window.localStorage`.
+Every request which need authentication is sent with the token in the header following this convention :
 
 **Token is set in Authorization header as :**
 ```javascript
@@ -138,9 +138,9 @@ Every request which need authentication is sent with the token in the header fol
 ```
 
 
-#### Socket  
-We use the [`io.socket.request`](http://sailsjs.org/documentation/reference/web-sockets/socket-client/io-socket-request) to communicate to the server.  
-Make sure that your server can use it if you don't use sails.js on server side.  
+#### Socket
+We use the [`io.socket.request`](http://sailsjs.org/documentation/reference/web-sockets/socket-client/io-socket-request) to communicate to the server.
+Make sure that your server can use it if you don't use sails.js on server side.
 
 ---
 
@@ -161,7 +161,7 @@ Make sure that your server can use it if you don't use sails.js on server side.
 | headerContent | `String` | "Bearer {{JWT}}" | The format of your header content **The format is affected by `localStorageName`** |
 | headerFormat | `String` | "Authorization" | The format of your header authorization key |
 | apiSpecs | `Object` | null | Routes where you want to use the JWT_Token |
-| responseSchemas | `Object` | `{http: {success : 'data.data', error : 'data'}, socket : {success : null, error : null}}` | schemas of your API's responses. Where the data can be found in your response object
+| responseSchemas | `Object` | `{http: {success : 'data', error : 'data'}, socket : {success : null, error : null}}` | schemas of your API's responses. Where the data can be found in your response object
 
 **The format of headerContent is affected by `localStorageName` if you change the default value**
 ```javascript
@@ -171,7 +171,7 @@ Make sure that your server can use it if you don't use sails.js on server side.
 }
 ```
 
-**For apiSpecs** you just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.  
+**For apiSpecs** you just have to set the **unpluralized** modelName or `primarymodelAssociatedmodels` with an `auth` property inside which contains an array of actions to authenticate.
 Just follow conventions given above.
 
 
@@ -199,12 +199,12 @@ Just follow conventions given above.
 ```
 
 #### Results
-findPerson -> will hit `GET http://your-api-host/my-prefix/people/:id`  
+findPerson -> will hit `GET http://your-api-host/my-prefix/people/:id`
 findPeople -> will hit `GET http://your-api-host/my-prefix/people`
 
 
 **With** `pluralizeModels : false`
-findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`  
+findPerson -> will hit `GET http://your-api-host/my-prefix/person/:id`
 findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 
 
@@ -218,19 +218,19 @@ findPeople -> will hit `GET http://your-api-host/my-prefix/person`
 ## Actions
 
 #### Names
-There is a maximum of **11** actions for a given model which will be automatically understood by reducers.  
-3 status actions are dispatched for every redux-crud-async action : **START**,  **SUCCESS** and **ERROR**. They are automatically understood by reducers.  
-eg. primary model = `channel`, associated model = `tag`  
+There is a maximum of **11** actions for a given model which will be automatically understood by reducers.
+3 status actions are dispatched for every redux-crud-async action : **START**,  **SUCCESS** and **ERROR**. They are automatically understood by reducers.
+eg. primary model = `channel`, associated model = `tag`
 
 **3 primary**
 
-| actionName      | url                     | param | state     | state Type  |  
-|:---             |:---                     |:---      |:---       |:---         |  
-| `findChannel`   | `GET channels/:id`      | `String` | channel   | `Object`    |  
-| `findChannels`  | `GET channels?request`  | `String` | channels  | `[Object]`  |  
-| `createChannel` | ` POST channels`        | `Object OR FormData `| channel   | `Object`    |  
-| `updateChannel` | ` PUT channels`         | `Object`| channel   | `Object`    |  
-| `destroyChannel` | ` DELETE channels`         | `Object`| channel   | `Object`    |  
+| actionName      | url                     | param | state     | state Type  |
+|:---             |:---                     |:---      |:---       |:---         |
+| `findChannel`   | `GET channels/:id`      | `String` | channel   | `Object`    |
+| `findChannels`  | `GET channels?request`  | `String` | channels  | `[Object]`  |
+| `createChannel` | ` POST channels`        | `Object OR FormData `| channel   | `Object`    |
+| `updateChannel` | ` PUT channels`         | `Object`| channel   | `Object`    |
+| `destroyChannel` | ` DELETE channels`         | `Object`| channel   | `Object`    |
 
 
 
@@ -249,7 +249,7 @@ FormData can be used to send specific CRUD actions like uploading an image**
 
 #### Additionnal actions
 
-An additionnal action exists which empties reducers. Dispatch manually this action to empty your reducers.  
+An additionnal action exists which empties reducers. Dispatch manually this action to empty your reducers.
 ```javascript
 {
   type : 'EMPTY_CHANNEL'
