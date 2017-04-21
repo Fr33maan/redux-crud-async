@@ -245,7 +245,7 @@ module.exports = function(modelName, hostConfig){
 
         return new XHR(hostConfig, headers[createModel], `${baseUrl}/${urlModel}`)
         .post(modelToCreate)
-        .then(res => dispatch(success(modelWithTmpId)))
+        .then(res => dispatch(success({...modelWithTmpId, id: res.id})))
         .catch(err => dispatch(error(err, modelWithTmpId)))
       }
 

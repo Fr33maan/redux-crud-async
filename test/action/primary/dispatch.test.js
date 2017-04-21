@@ -136,7 +136,7 @@ describe('async actions', () => {
 
       nock('http://test.com')
       .post('/channels', channelToCreate)
-      .reply(200)
+      .reply(200, {...channelToCreate, id: 1})
 
       const expectedActions = [
         {
