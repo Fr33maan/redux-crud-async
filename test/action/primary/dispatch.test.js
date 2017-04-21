@@ -29,7 +29,7 @@ describe('async actions', () => {
     it('should dispatch CHANNEL_FIND_START and CHANNEL_FIND_SUCCESS when findChannel action is dispatched', (done) => {
       nock('http://test.com')
       .get('/channels/667')
-      .reply(200, { data: {name: 'im a channel'}})
+      .reply(200, {name: 'im a channel'})
 
       const expectedActions = [
         { type: actionTypes.CHANNEL_FIND_START },
@@ -89,7 +89,7 @@ describe('async actions', () => {
     it('should dispatch CHANNELS_FIND_START and CHANNELS_FIND_SUCCESS when findChannels action is dispatched', (done) => {
       nock('http://test.com')
       .get('/channels')
-      .reply(200, { data: [{name: 'im a channel'}] })
+      .reply(200, [{name: 'im a channel'}])
 
       const expectedActions = [
         { type: actionTypes.CHANNELS_FIND_START },
@@ -144,7 +144,7 @@ describe('async actions', () => {
           channel : channelToCreate
         },{
           type    : actionTypes.CHANNEL_CREATE_SUCCESS,
-          channel : channelToCreate,
+          channel : {...channelToCreate, id: 1},
           message : 'channel has been created'
         }
       ]
@@ -208,7 +208,7 @@ describe('async actions', () => {
 
       nock('http://test.com')
       .put('/channels/123', updatedChannel)
-      .reply(200, { data: updatedChannel})
+      .reply(200, updatedChannel)
 
       const expectedActions = [
         {

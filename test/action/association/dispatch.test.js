@@ -42,7 +42,7 @@ describe('async actions', () => {
     it('should dispatch FIND_CHANNEL_TAGS_START and FIND_CHANNEL_TAGS_SUCCESS when findChannelTags action is dispatched', (done) => {
       nock('http://test.com')
       .get('/channels/667/tags')
-      .reply(200, { data: [{name: 'im a channel'}]})
+      .reply(200, [{name: 'im a channel'}])
 
       const expectedActions = [
         { type: actionTypes.FIND_CHANNEL_TAGS_START },

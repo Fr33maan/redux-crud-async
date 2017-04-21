@@ -9,14 +9,12 @@ describe('XHR provider', function() {
   describe('XHR - HTTP Provider', function(){
 
     describe('success', function(){
-      it('should extract data from HTTP response - default schema to res = {data : {data : value}}', function(){
+      it('should extract data from HTTP response - default schema to res = {data : value}', function(){
 
         const XHRInstance = new XHR({})
         const value = 'success'
         const res = {
-          data : {
-            data : value
-          }
+          data : value
         }
 
 
